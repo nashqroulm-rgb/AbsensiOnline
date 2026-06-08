@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { MapPin, CheckCircle, AlertCircle, Camera, FileText, X, Clock, Upload, WifiOff } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 import { useAuth } from '../../context/AuthContext';
 import { submitCheckIn, submitCheckOut, getTodayAttendance } from '../../services/attendance.service';
 import { getWorkerById } from '../../services/workers.service';
 import { getZones } from '../../services/zones.service';
 import { getShifts } from '../../services/shifts.service';
+import { createAttachment, incrementLampiranCount } from '../../services/attachments.service';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import type { Attachment, User, Zone, Shift } from '../../types';
 import GeofenceMap from './GeofenceMap';
@@ -282,26 +284,62 @@ export default function HomeTab() {
     if (attachments.length >= 10) { alert('Batas 10 file per hari tercapai'); return; }
     if (!isOnline) { alert('Upload tersedia saat online'); return; }
 
+    let uploadFile = file;
+    if (type === 'foto') {
+      try {
+        setUploadProgress(0);
+        uploadFile = await imageCompression(file, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+          onProgress: (p) => setUploadProgress(Math.round(p * 0.5)),
+        });
+      } catch {
+        alert('Gagal kompres foto. Upload file asli.');
+        uploadFile = file;
+      }
+    }
+
     const folder = `${currentUser?.id || 'unknown'}/${activeAttendanceId || 'pending'}`;
-    setUploadProgress(0);
-    const result = await uploadToCloudinary(file, folder, setUploadProgress);
+    const result = await uploadToCloudinary(uploadFile, folder, (p) =>
+      setUploadProgress(type === 'foto' ? 50 + Math.round(p * 0.5) : p),
+    );
     if (!result.success) {
       alert(result.error);
       setUploadProgress(null);
       return;
     }
-    const att: Attachment = {
-      id: `att_${Date.now()}`,
-      attendance_id: activeAttendanceId || 'current',
-      user_id: currentUser?.id || '',
-      tipe: type,
-      url: result.data.secure_url,
-      nama_file: file.name,
-      ukuran_bytes: file.size,
-      status_verifikasi: 'menunggu',
-      created_at: new Date().toISOString(),
-    };
-    setAttachments(prev => [...prev, att]);
+
+    if (activeAttendanceId) {
+      const dbResult = await createAttachment({
+        attendance_id: activeAttendanceId,
+        user_id: currentUser?.id || '',
+        tipe: type,
+        url: result.data.secure_url,
+        nama_file: file.name,
+        ukuran_bytes: uploadFile.size,
+        status_verifikasi: 'menunggu',
+      });
+      if (dbResult.success) {
+        await incrementLampiranCount(activeAttendanceId);
+        setAttachments(prev => [...prev, dbResult.data]);
+      } else {
+        alert('File berhasil diupload tapi gagal disimpan ke database.');
+      }
+    } else {
+      const att: Attachment = {
+        id: `att_${Date.now()}`,
+        attendance_id: 'current',
+        user_id: currentUser?.id || '',
+        tipe: type,
+        url: result.data.secure_url,
+        nama_file: file.name,
+        ukuran_bytes: uploadFile.size,
+        status_verifikasi: 'menunggu',
+        created_at: new Date().toISOString(),
+      };
+      setAttachments(prev => [...prev, att]);
+    }
     setUploadProgress(null);
   };
 
