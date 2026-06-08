@@ -276,12 +276,25 @@ export default function HomeTab() {
   };
 
   const handleUpload = async (file: File, type: 'foto' | 'dokumen') => {
-    const maxBytes = type === 'foto' ? 10 * 1024 * 1024 : 25 * 1024 * 1024;
-    if (file.size > maxBytes) {
-      alert(`Ukuran file melebihi batas (${type === 'foto' ? '10MB' : '25MB'})`);
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    const MAX_FILES_PER_DAY = 10;
+    const MAX_PHOTOS_PER_DAY = 5;
+    const MAX_DOCS_PER_DAY = 5;
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`Ukuran file maksimal 5MB (${type === 'foto' ? 'foto' : 'dokumen'})`);
       return;
     }
-    if (attachments.length >= 10) { alert('Batas 10 file per hari tercapai'); return; }
+    if (attachments.length >= MAX_FILES_PER_DAY) {
+      alert(`Batas ${MAX_FILES_PER_DAY} file per hari tercapai`);
+      return;
+    }
+    const sameTypeCount = attachments.filter(a => a.tipe === type).length;
+    const maxForType = type === 'foto' ? MAX_PHOTOS_PER_DAY : MAX_DOCS_PER_DAY;
+    if (sameTypeCount >= maxForType) {
+      alert(`Batas ${maxForType} ${type} per hari tercapai`);
+      return;
+    }
     if (!isOnline) { alert('Upload tersedia saat online'); return; }
 
     let uploadFile = file;
@@ -289,7 +302,7 @@ export default function HomeTab() {
       try {
         setUploadProgress(0);
         uploadFile = await imageCompression(file, {
-          maxSizeMB: 1,
+          maxSizeMB: 0.5,
           maxWidthOrHeight: 1920,
           useWebWorker: true,
           onProgress: (p) => setUploadProgress(Math.round(p * 0.5)),
