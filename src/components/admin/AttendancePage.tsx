@@ -9,6 +9,7 @@ import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
 import Modal from '../ui/Modal';
 import AttachmentModal from './AttachmentModal';
+import { useToast } from '../ui/Toast';
 
 const STATUS_OPTS: { value: string; label: string }[] = [
   { value: '', label: 'Semua Status' },
@@ -35,6 +36,7 @@ function formatDuration(min: number | null) {
 }
 
 export default function AttendancePage() {
+  const { toast } = useToast();
   const [search, setSearch] = useState('');
   const [filterZona, setFilterZona] = useState('');
   const [filterShift, setFilterShift] = useState('');
@@ -79,8 +81,12 @@ export default function AttendancePage() {
   };
 
   const handleDeleteAttachment = async (id: string) => {
-    await rejectAndDeleteAttachment(id);
-    setCurrentAttachments(prev => prev.filter(a => a.id !== id));
+    const res = await rejectAndDeleteAttachment(id);
+    if (res.success) {
+      setCurrentAttachments(prev => prev.filter(a => a.id !== id));
+    } else {
+      toast(res.error, 'error');
+    }
   };
 
   const PAGE_SIZE = 10;
