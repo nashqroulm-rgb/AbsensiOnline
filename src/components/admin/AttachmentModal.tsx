@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, FileText, Image, CheckCircle, XCircle } from 'lucide-react';
+import { FileText, Image, CheckCircle, XCircle, Eye } from 'lucide-react';
 import Modal from '../ui/Modal';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
@@ -54,29 +54,19 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
                     {att.status_verifikasi === 'terverifikasi' ? 'Terverifikasi' : att.status_verifikasi === 'ditolak' ? 'Ditolak' : 'Menunggu'}
                   </Badge>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    {att.tipe === 'foto' ? (
-                      <button onClick={() => setPreviewIdx(idx)}
-                        className="p-2 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-colors" title="Preview">
-                        <Image size={16} />
-                      </button>
-                    ) : (
-                      <a href={att.url} target="_blank" rel="noopener noreferrer"
-                        className="p-2 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-colors" title="Buka">
-                        <FileText size={16} />
-                      </a>
-                    )}
-                    <a href={att.url} download={att.nama_file}
-                      className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors" title="Download">
-                      <Download size={16} />
-                    </a>
+                    <button onClick={() => setPreviewIdx(idx)}
+                      className="p-2 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-colors" title="Lihat">
+                      <Eye size={16} />
+                    </button>
                     {onVerify && att.status_verifikasi === 'menunggu' && (
                       <>
                         <button onClick={() => handleVerify(att.id, 'terverifikasi')} disabled={verifyingId === att.id}
                           className="p-2 hover:bg-green-50 rounded-lg text-gray-400 hover:text-green-600 transition-colors disabled:opacity-50" title="Verifikasi">
                           <CheckCircle size={16} />
                         </button>
-                        <button onClick={() => handleVerify(att.id, 'ditolak')} disabled={verifyingId === att.id}
-                          className="p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50" title="Tolak">
+                        <button onClick={() => { if (confirm('Tolak lampiran ini? File tidak akan disimpan.')) handleVerify(att.id, 'ditolak'); }}
+                          disabled={verifyingId === att.id}
+                          className="p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50" title="Tolak & Hapus">
                           <XCircle size={16} />
                         </button>
                       </>
@@ -89,12 +79,20 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
         </div>
       </Modal>
 
-      {/* Full preview modal */}
+      {/* Full preview */}
       {previewIdx !== null && attachments[previewIdx] && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={() => setPreviewIdx(null)}>
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-          <img src={attachments[previewIdx].url} alt={attachments[previewIdx].nama_file}
-            className="relative z-10 max-w-full max-h-[90vh] rounded-xl object-contain shadow-2xl" />
+          <div className="relative z-10 max-w-full max-h-[90vh] flex flex-col items-center gap-3">
+            {attachments[previewIdx].tipe === 'foto' ? (
+              <img src={attachments[previewIdx].url} alt={attachments[previewIdx].nama_file}
+                className="max-w-full max-h-[80vh] rounded-xl object-contain shadow-2xl" />
+            ) : (
+              <iframe src={attachments[previewIdx].url}
+                className="w-[80vw] max-w-4xl h-[80vh] rounded-xl bg-white shadow-2xl" title={attachments[previewIdx].nama_file} />
+            )}
+            <p className="text-white text-sm bg-black/40 px-3 py-1 rounded-full">{attachments[previewIdx].nama_file}</p>
+          </div>
           <button onClick={() => setPreviewIdx(null)}
             className="absolute top-4 right-4 z-20 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors">
             ✕
