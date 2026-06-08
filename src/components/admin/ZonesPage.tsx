@@ -261,9 +261,10 @@ export default function ZonesPage() {
   useEffect(() => { loadZones(); }, [loadZones]);
 
   const handleSaveZone = async (payload: Omit<Zone, 'id'> & { id?: string }) => {
-    const result = payload.id
-      ? await updateZone(payload.id, payload)
-      : await createZone(payload);
+    const { id, ...zoneData } = payload;
+    const result = id
+      ? await updateZone(id, zoneData)
+      : await createZone(zoneData);
     if (result.success) {
       await loadZones();
       setShowForm(false);

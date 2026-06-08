@@ -138,9 +138,10 @@ export default function ShiftsPage() {
   useEffect(() => { loadShifts(); }, [loadShifts]);
 
   const handleSaveShift = async (payload: Omit<Shift, 'id'> & { id?: string }) => {
-    const result = payload.id
-      ? await updateShift(payload.id, payload)
-      : await createShift(payload);
+    const { id, ...shiftData } = payload;
+    const result = id
+      ? await updateShift(id, shiftData)
+      : await createShift(shiftData);
     if (result.success) {
       await loadShifts();
       setShowForm(false);
