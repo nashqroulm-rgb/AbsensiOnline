@@ -62,6 +62,7 @@ export async function createWorker(worker: Omit<User, 'id'>): Promise<ServiceRes
     no_hp: worker.no_hp,
     nama: worker.nama,
     password: '1234',
+    role: worker.role || 'worker',
   });
   if (authResult.error) {
     return { success: false, error: authResult.error as string };

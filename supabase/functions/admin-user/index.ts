@@ -56,10 +56,11 @@ serve(async (req) => {
     const { type, ...payload } = await req.json();
 
     if (type === "create") {
-      const { no_hp, nama, password } = payload as {
+      const { no_hp, nama, password, role } = payload as {
         no_hp: string;
         nama: string;
         password?: string;
+        role?: string;
       };
 
       if (!no_hp || !nama) {
@@ -76,7 +77,7 @@ serve(async (req) => {
           email,
           password: password || "1234",
           email_confirm: true,
-          user_metadata: { nama, no_hp },
+          user_metadata: { nama, no_hp, role: role || "worker" },
         });
 
       if (createError) {

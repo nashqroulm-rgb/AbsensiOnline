@@ -18,8 +18,8 @@ serve(async (req) => {
     );
 
     const users = [
-      { id: "c0000000-0000-4000-8000-000000000011", no_hp: "080000000001", nama: "Admin Sistem", password: "1234" },
-      { id: "c0000000-0000-4000-8000-000000000001", no_hp: "081234567890", nama: "Budi Santoso", password: "1234" },
+      { id: "c0000000-0000-4000-8000-000000000011", no_hp: "080000000001", nama: "Admin Sistem", password: "1234", role: "admin" },
+      { id: "c0000000-0000-4000-8000-000000000001", no_hp: "081234567890", nama: "Budi Santoso", password: "1234", role: "worker" },
     ];
 
     const results = [];
@@ -40,7 +40,7 @@ serve(async (req) => {
         email,
         password: u.password,
         email_confirm: true,
-        user_metadata: { nama: u.nama, no_hp: u.no_hp },
+        user_metadata: { nama: u.nama, no_hp: u.no_hp, role: u.role },
       });
 
       results.push({
