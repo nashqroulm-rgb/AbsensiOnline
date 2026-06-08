@@ -3,10 +3,12 @@ import { Search, Download, Eye, Edit2, ChevronLeft, ChevronRight } from 'lucide-
 import { getAttendances, getStatusLabel } from '../../services/attendance.service';
 import { getShifts } from '../../services/shifts.service';
 import { getZones } from '../../services/zones.service';
-import type { Attendance, AttendanceStatus, Zone, Shift } from '../../types';
+import { getAttachmentsByAttendance, updateAttachmentVerification } from '../../services/attachments.service';
+import type { Attendance, AttendanceStatus, Zone, Shift, Attachment } from '../../types';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
 import Modal from '../ui/Modal';
+import AttachmentModal from './AttachmentModal';
 
 const STATUS_OPTS: { value: string; label: string }[] = [
   { value: '', label: 'Semua Status' },
@@ -46,6 +48,9 @@ export default function AttendancePage() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
+  const [showAttachments, setShowAttachments] = useState(false);
+  const [currentAttachments, setCurrentAttachments] = useState<Attachment[]>([]);
+  const [attUserNama, setAttUserNama] = useState('');
 
   useEffect(() => {
     async function load() {
@@ -60,6 +65,18 @@ export default function AttendancePage() {
     }
     load();
   }, []);
+
+  const openAttachments = async (att: Attendance) => {
+    const res = await getAttachmentsByAttendance(att.id);
+    setCurrentAttachments(res.success ? res.data : []);
+    setAttUserNama(att.user_nama);
+    setShowAttachments(true);
+  };
+
+  const handleVerify = async (id: string, status: 'terverifikasi' | 'ditolak') => {
+    await updateAttachmentVerification(id, status);
+    setCurrentAttachments(prev => prev.map(a => a.id === id ? { ...a, status_verifikasi: status } : a));
+  };
 
   const PAGE_SIZE = 10;
 
@@ -181,7 +198,7 @@ export default function AttendancePage() {
                       </td>
                       <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-1">
-                          <button onClick={() => setSelectedAtt(isSelected ? null : att)}
+                          <button onClick={() => att.lampiran_count > 0 ? openAttachments(att) : setSelectedAtt(isSelected ? null : att)}
                             className="p-1.5 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-colors">
                             <Eye size={14} />
                           </button>
@@ -195,7 +212,7 @@ export default function AttendancePage() {
                     {isSelected && (
                       <tr key={`${att.id}-detail`}>
                         <td colSpan={10} className="px-4 pb-4 pt-2 bg-blue-50/20">
-                          <AttendanceDetail att={att} zones={zones} shifts={shifts} onOverride={() => { setShowOverride(true); }} />
+                          <AttendanceDetail att={att} zones={zones} shifts={shifts} onOverride={() => { setShowOverride(true); }} onOpenAttachments={() => openAttachments(att)} />
                         </td>
                       </tr>
                     )}
@@ -254,11 +271,15 @@ export default function AttendancePage() {
           </div>
         </div>
       </Modal>
+
+      {/* Attachment Modal */}
+      <AttachmentModal isOpen={showAttachments} onClose={() => setShowAttachments(false)}
+        attachments={currentAttachments} userNama={attUserNama} onVerify={handleVerify} />
     </div>
   );
 }
 
-function AttendanceDetail({ att, zones, shifts, onOverride }: { att: Attendance; zones: Zone[]; shifts: Shift[]; onOverride: () => void }) {
+function AttendanceDetail({ att, zones, shifts, onOverride, onOpenAttachments }: { att: Attendance; zones: Zone[]; shifts: Shift[]; onOverride: () => void; onOpenAttachments: () => void }) {
   const zone = zones.find(z => z.id === att.zona_id);
   const shift = shifts.find(s => s.id === att.shift_id);
 
@@ -282,7 +303,7 @@ function AttendanceDetail({ att, zones, shifts, onOverride }: { att: Attendance;
       <div className="col-span-2 md:col-span-4 flex gap-2 pt-2 border-t border-gray-100">
         <button onClick={onOverride} className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium">Override Status</button>
         {att.lampiran_count > 0 && (
-          <button className="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-lg text-xs font-medium">Lihat Lampiran</button>
+          <button onClick={onOpenAttachments} className="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-lg text-xs font-medium">Lihat Lampiran</button>
         )}
       </div>
     </div>
