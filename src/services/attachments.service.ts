@@ -8,8 +8,9 @@ function extractCloudinaryPublicId(url: string): { publicId: string; resourceTyp
     const uploadIdx = parts.indexOf('upload');
     if (uploadIdx === -1) return null;
     const resourceType = parts[uploadIdx - 1] || 'image';
-    const rest = parts.slice(uploadIdx + 1).join('/');
-    const publicId = rest.replace(/\.[^.]+$/, '');
+    const rest = parts.slice(uploadIdx + 1);
+    const withoutVersion = rest[0]?.startsWith('v') && /^\d+$/.test(rest[0].slice(1)) ? rest.slice(1) : rest;
+    const publicId = withoutVersion.join('/').replace(/\.[^.]+$/, '');
     return { publicId, resourceType };
   } catch {
     return null;
