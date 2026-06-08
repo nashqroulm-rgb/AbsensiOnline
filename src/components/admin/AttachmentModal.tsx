@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FileText, Image, CheckCircle, XCircle, Eye, Download } from 'lucide-react';
 import Modal from '../ui/Modal';
+import ConfirmDialog from '../ui/ConfirmDialog';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
 import type { Attachment } from '../../types';
@@ -23,9 +24,10 @@ interface Props {
 export default function AttachmentModal({ isOpen, onClose, attachments, userNama, onVerify, onDelete }: Props) {
   const [previewIdx, setPreviewIdx] = useState<number | null>(null);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isOpen) { setPreviewIdx(null); setVerifyingId(null); }
+    if (!isOpen) { setPreviewIdx(null); setVerifyingId(null); setConfirmDeleteId(null); }
   }, [isOpen]);
 
   const handleVerify = async (id: string, status: 'terverifikasi' | 'ditolak') => {
@@ -88,7 +90,7 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
                           className="p-2 hover:bg-green-50 rounded-lg text-gray-400 hover:text-green-600 transition-colors disabled:opacity-50" title="Verifikasi">
                           <CheckCircle size={16} />
                         </button>
-                        <button onClick={() => { if (confirm('Tolak & hapus lampiran ini dari Cloudinary?')) { onDelete?.(att.id); } }}
+                        <button onClick={() => setConfirmDeleteId(att.id)}
                           disabled={verifyingId === att.id}
                           className="p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50" title="Tolak & Hapus">
                           <XCircle size={16} />
@@ -124,6 +126,17 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
           </button>
         </div>
       )}
+
+      {/* Confirm delete dialog */}
+      <ConfirmDialog
+        isOpen={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        onConfirm={() => { if (confirmDeleteId) onDelete?.(confirmDeleteId); }}
+        title="Tolak Lampiran"
+        message="File akan dihapus permanen dari Cloudinary. Lanjutkan?"
+        confirmLabel="Ya, Hapus"
+        variant="danger"
+      />
     </>
   );
 }

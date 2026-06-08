@@ -4,6 +4,7 @@ import type { Zone } from '../../types';
 import { getZones, createZone, updateZone, deleteZone } from '../../services/zones.service';
 import Badge from '../ui/Badge';
 import Modal from '../ui/Modal';
+import { useToast } from '../ui/Toast';
 
 function ZoneMap({ zones, selectedZone, onSelectZone }: { zones: Zone[]; selectedZone: Zone | null; onSelectZone: (z: Zone) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -154,10 +155,12 @@ function ZoneForm({
   onClose,
   onSubmit,
   initial,
+  toast,
 }: {
   onClose: () => void;
   onSubmit: (zone: Omit<Zone, 'id'> & { id?: string }) => void;
   initial?: Partial<Zone>;
+  toast: (msg: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }) {
   const [form, setForm] = useState({
     nama: initial?.nama || '',
@@ -217,9 +220,9 @@ function ZoneForm({
             const lat = parseFloat(form.latitude);
             const lng = parseFloat(form.longitude);
             const radius = parseInt(form.radius_meter, 10);
-            if (isNaN(lat) || lat < -90 || lat > 90) { alert('Latitude harus antara -90 dan 90'); return; }
-            if (isNaN(lng) || lng < -180 || lng > 180) { alert('Longitude harus antara -180 dan 180'); return; }
-            if (isNaN(radius) || radius <= 0 || radius > 10000) { alert('Radius harus antara 1 dan 10.000 meter'); return; }
+            if (isNaN(lat) || lat < -90 || lat > 90) { toast('Latitude harus antara -90 dan 90', 'warning'); return; }
+            if (isNaN(lng) || lng < -180 || lng > 180) { toast('Longitude harus antara -180 dan 180', 'warning'); return; }
+            if (isNaN(radius) || radius <= 0 || radius > 10000) { toast('Radius harus antara 1 dan 10.000 meter', 'warning'); return; }
             onSubmit({
               id: initial?.id,
               nama: form.nama.trim(),
@@ -248,6 +251,7 @@ export default function ZonesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editZone, setEditZone] = useState<Zone | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Zone | null>(null);
+  const { toast } = useToast();
 
   const loadZones = useCallback(async () => {
     setLoading(true);
@@ -270,7 +274,7 @@ export default function ZonesPage() {
       setShowForm(false);
       setEditZone(null);
     } else {
-      alert(result.error);
+      toast(result.error, 'error');
     }
   };
 
@@ -282,7 +286,7 @@ export default function ZonesPage() {
       setSelectedZone(null);
       await loadZones();
     } else {
-      alert(result.error);
+      toast(result.error, 'error');
     }
   };
 
@@ -392,6 +396,7 @@ export default function ZonesPage() {
           onClose={() => { setShowForm(false); setEditZone(null); }}
           onSubmit={handleSaveZone}
           initial={editZone || undefined}
+          toast={toast}
         />
       </Modal>
 

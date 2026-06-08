@@ -11,6 +11,7 @@ import { uploadToCloudinary } from '../../utils/cloudinary';
 import type { Attachment, User, Zone, Shift } from '../../types';
 import GeofenceMap from './GeofenceMap';
 import Badge from '../ui/Badge';
+import { useToast } from '../ui/Toast';
 
 type CheckState = 'not_checked_in' | 'checked_in' | 'checked_out';
 
@@ -24,6 +25,7 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
 
 export default function HomeTab() {
   const { currentUser } = useAuth();
+  const { toast } = useToast();
   const [worker, setWorker] = useState<User | null>(currentUser);
   const [zone, setZone] = useState<Zone | null>(null);
   const [shift, setShift] = useState<Shift | null>(null);
@@ -282,20 +284,20 @@ export default function HomeTab() {
     const MAX_DOCS_PER_DAY = 5;
 
     if (file.size > MAX_FILE_SIZE) {
-      alert(`Ukuran file maksimal 5MB (${type === 'foto' ? 'foto' : 'dokumen'})`);
+      toast(`Ukuran file maksimal 5MB (${type === 'foto' ? 'foto' : 'dokumen'})`, 'warning');
       return;
     }
     if (attachments.length >= MAX_FILES_PER_DAY) {
-      alert(`Batas ${MAX_FILES_PER_DAY} file per hari tercapai`);
+      toast(`Batas ${MAX_FILES_PER_DAY} file per hari tercapai`, 'warning');
       return;
     }
     const sameTypeCount = attachments.filter(a => a.tipe === type).length;
     const maxForType = type === 'foto' ? MAX_PHOTOS_PER_DAY : MAX_DOCS_PER_DAY;
     if (sameTypeCount >= maxForType) {
-      alert(`Batas ${maxForType} ${type} per hari tercapai`);
+      toast(`Batas ${maxForType} ${type} per hari tercapai`, 'warning');
       return;
     }
-    if (!isOnline) { alert('Upload tersedia saat online'); return; }
+    if (!isOnline) { toast('Upload tersedia saat online', 'warning'); return; }
 
     let uploadFile = file;
     if (type === 'foto') {
@@ -308,7 +310,7 @@ export default function HomeTab() {
           onProgress: (p) => setUploadProgress(Math.round(p * 0.5)),
         });
       } catch {
-        alert('Gagal kompres foto. Upload file asli.');
+        toast('Gagal kompres foto. Upload file asli.', 'warning');
         uploadFile = file;
       }
     }
@@ -318,7 +320,7 @@ export default function HomeTab() {
       setUploadProgress(type === 'foto' ? 50 + Math.round(p * 0.5) : p),
     );
     if (!result.success) {
-      alert(result.error);
+      toast(result.error, 'error');
       setUploadProgress(null);
       return;
     }
@@ -337,7 +339,7 @@ export default function HomeTab() {
         await incrementLampiranCount(activeAttendanceId);
         setAttachments(prev => [...prev, dbResult.data]);
       } else {
-        alert('File berhasil diupload tapi gagal disimpan ke database.');
+        toast('File berhasil diupload tapi gagal disimpan ke database.', 'error');
       }
     } else {
       const att: Attachment = {

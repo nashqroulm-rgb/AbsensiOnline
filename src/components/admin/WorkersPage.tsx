@@ -8,6 +8,7 @@ import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
 import Toggle from '../ui/Toggle';
 import Modal from '../ui/Modal';
+import { useToast } from '../ui/Toast';
 
 const PAGE_SIZE = 8;
 
@@ -37,12 +38,14 @@ function WorkerForm({
   initial,
   zones,
   shifts,
+  toast,
 }: {
   onClose: () => void;
   onSubmit: (data: WorkerFormData) => void;
   initial?: Partial<User>;
   zones: Zone[];
   shifts: Shift[];
+  toast: (msg: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }) {
   const [form, setForm] = useState({
     nama: initial?.nama || '',
@@ -128,7 +131,7 @@ function WorkerForm({
         <button
           onClick={() => {
             if (!form.nama.trim() || !form.no_hp.trim()) return;
-            if (!/^[0-9]{10,15}$/.test(form.no_hp.trim())) { alert('Nomor HP harus 10-15 digit angka'); return; }
+            if (!/^[0-9]{10,15}$/.test(form.no_hp.trim())) { toast('Nomor HP harus 10-15 digit angka', 'warning'); return; }
             onSubmit({
               nama: form.nama.trim(),
               no_hp: form.no_hp.trim(),
@@ -165,6 +168,7 @@ export default function WorkersPage() {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const loadData = async () => {
     setLoading(true);
@@ -428,6 +432,7 @@ export default function WorkersPage() {
           initial={editUser || undefined}
           zones={zones}
           shifts={shifts}
+          toast={toast}
         />
       </Modal>
 

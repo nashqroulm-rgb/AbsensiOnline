@@ -4,15 +4,18 @@ import type { Shift } from '../../types';
 import { getShifts, createShift, updateShift, deleteShift } from '../../services/shifts.service';
 import Badge from '../ui/Badge';
 import Modal from '../ui/Modal';
+import { useToast } from '../ui/Toast';
 
 function ShiftForm({
   onClose,
   onSubmit,
   initial,
+  toast,
 }: {
   onClose: () => void;
   onSubmit: (shift: Omit<Shift, 'id'> & { id?: string }) => void;
   initial?: Partial<Shift>;
+  toast: (msg: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }) {
   const [form, setForm] = useState({
     nama: initial?.nama || '',
@@ -97,7 +100,7 @@ function ShiftForm({
           onClick={() => {
             if (!form.nama.trim()) return;
             const toleransi = parseInt(form.toleransi_menit, 10);
-            if (isNaN(toleransi) || toleransi < 0 || toleransi > 120) { alert('Toleransi harus antara 0 dan 120 menit'); return; }
+            if (isNaN(toleransi) || toleransi < 0 || toleransi > 120) { toast('Toleransi harus antara 0 dan 120 menit', 'warning'); return; }
             onSubmit({
               id: initial?.id,
               nama: form.nama.trim(),
@@ -125,6 +128,7 @@ export default function ShiftsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editShift, setEditShift] = useState<Shift | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Shift | null>(null);
+  const { toast } = useToast();
 
   const loadShifts = useCallback(async () => {
     setLoading(true);
@@ -147,7 +151,7 @@ export default function ShiftsPage() {
       setShowForm(false);
       setEditShift(null);
     } else {
-      alert(result.error);
+      toast(result.error, 'error');
     }
   };
 
@@ -158,7 +162,7 @@ export default function ShiftsPage() {
       setDeleteTarget(null);
       await loadShifts();
     } else {
-      alert(result.error);
+      toast(result.error, 'error');
     }
   };
 
@@ -267,6 +271,7 @@ export default function ShiftsPage() {
           onClose={() => { setShowForm(false); setEditShift(null); }}
           onSubmit={handleSaveShift}
           initial={editShift || undefined}
+          toast={toast}
         />
       </Modal>
 

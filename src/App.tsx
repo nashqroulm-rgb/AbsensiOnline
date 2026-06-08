@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './components/ui/Toast';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
@@ -20,34 +21,36 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Navigate to="/login" replace />} />
+        <ToastProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
 
-          <Route element={<ProtectedRoute adminOnly />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="workers" element={<WorkersPage />} />
-              <Route path="shifts" element={<ShiftsPage />} />
-              <Route path="zones" element={<ZonesPage />} />
-              <Route path="attendance" element={<AttendancePage />} />
-              <Route path="reports" element={<ReportsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+            <Route element={<ProtectedRoute adminOnly />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="workers" element={<WorkersPage />} />
+                <Route path="shifts" element={<ShiftsPage />} />
+                <Route path="zones" element={<ZonesPage />} />
+                <Route path="attendance" element={<AttendancePage />} />
+                <Route path="reports" element={<ReportsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/app" element={<PWALayout />}>
-              <Route index element={<Navigate to="/app/home" replace />} />
-              <Route path="home" element={<HomeTab />} />
-              <Route path="history" element={<HistoryTab />} />
-              <Route path="profile" element={<ProfileTab />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/app" element={<PWALayout />}>
+                <Route index element={<Navigate to="/app/home" replace />} />
+                <Route path="home" element={<HomeTab />} />
+                <Route path="history" element={<HistoryTab />} />
+                <Route path="profile" element={<ProfileTab />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </ToastProvider>
       </AuthProvider>
     </ErrorBoundary>
   );
