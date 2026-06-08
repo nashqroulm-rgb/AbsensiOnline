@@ -1,6 +1,48 @@
 import { supabase } from '../config/supabase';
 import type { Attachment, ServiceResult } from '../types';
 
+function extractCloudinaryPublicId(url: string): { publicId: string; resourceType: string } | null {
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.split('/');
+    const uploadIdx = parts.indexOf('upload');
+    if (uploadIdx === -1) return null;
+    const resourceType = parts[uploadIdx - 1] || 'image';
+    const rest = parts.slice(uploadIdx + 1).join('/');
+    const publicId = rest.replace(/\.[^.]+$/, '');
+    return { publicId, resourceType };
+  } catch {
+    return null;
+  }
+}
+
+async function deleteFromCloudinary(url: string): Promise<ServiceResult<void>> {
+  const parsed = extractCloudinaryPublicId(url);
+  if (!parsed) return { success: false, error: 'Invalid Cloudinary URL' };
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return { success: false, error: 'Not authenticated' };
+
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  const res = await fetch(`${supabaseUrl}/functions/v1/cloudinary-delete`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+      apikey: supabaseKey,
+    },
+    body: JSON.stringify({ public_id: parsed.publicId, resource_type: parsed.resourceType }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Delete failed' }));
+    return { success: false, error: err.error || 'Cloudinary delete failed' };
+  }
+  return { success: true, data: undefined };
+}
+
 export async function getAttachmentsByAttendance(attendanceId: string): Promise<ServiceResult<Attachment[]>> {
   const { data, error } = await supabase
     .from('attachments')
@@ -47,6 +89,22 @@ export async function updateAttachmentVerification(
     .select();
   if (error) return { success: false, error: error.message, code: error.code };
   return { success: true, data: (data?.[0] as Attachment) || ({} as Attachment) };
+}
+
+export async function rejectAndDeleteAttachment(id: string): Promise<ServiceResult<void>> {
+  const { data: att, error: fetchErr } = await supabase
+    .from('attachments')
+    .select('url')
+    .eq('id', id)
+    .single();
+  if (fetchErr || !att) return { success: false, error: 'Attachment not found' };
+
+  const cloudRes = await deleteFromCloudinary(att.url);
+  if (!cloudRes.success) return cloudRes;
+
+  const { error } = await supabase.from('attachments').delete().eq('id', id);
+  if (error) return { success: false, error: error.message, code: error.code };
+  return { success: true, data: undefined };
 }
 
 export async function incrementLampiranCount(attendanceId: string): Promise<ServiceResult<void>> {

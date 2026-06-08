@@ -3,7 +3,7 @@ import { Search, Download, Eye, Edit2, ChevronLeft, ChevronRight } from 'lucide-
 import { getAttendances, getStatusLabel } from '../../services/attendance.service';
 import { getShifts } from '../../services/shifts.service';
 import { getZones } from '../../services/zones.service';
-import { getAttachmentsByAttendance, updateAttachmentVerification } from '../../services/attachments.service';
+import { getAttachmentsByAttendance, updateAttachmentVerification, rejectAndDeleteAttachment } from '../../services/attachments.service';
 import type { Attendance, AttendanceStatus, Zone, Shift, Attachment } from '../../types';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
@@ -76,6 +76,11 @@ export default function AttendancePage() {
   const handleVerify = async (id: string, status: 'terverifikasi' | 'ditolak') => {
     await updateAttachmentVerification(id, status);
     setCurrentAttachments(prev => prev.map(a => a.id === id ? { ...a, status_verifikasi: status } : a));
+  };
+
+  const handleDeleteAttachment = async (id: string) => {
+    await rejectAndDeleteAttachment(id);
+    setCurrentAttachments(prev => prev.filter(a => a.id !== id));
   };
 
   const PAGE_SIZE = 10;
@@ -274,7 +279,7 @@ export default function AttendancePage() {
 
       {/* Attachment Modal */}
       <AttachmentModal isOpen={showAttachments} onClose={() => setShowAttachments(false)}
-        attachments={currentAttachments} userNama={attUserNama} onVerify={handleVerify} />
+        attachments={currentAttachments} userNama={attUserNama} onVerify={handleVerify} onDelete={handleDeleteAttachment} />
     </div>
   );
 }

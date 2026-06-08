@@ -2,8 +2,8 @@ Cloudinary Onboarding Prompt
 
 Here are my Cloudinary credentials:
 Cloud Name: dqhseumee
-API Key: 324186995316915
-API Secret: _bJ06ldtT5zIslUN2M6Al50lklM
+API Key: lihat .env
+API Secret: lihat .env
 
 You are helping a first-time Cloudinary user who already has an account set up their integration from scratch. Follow these rules:
 
