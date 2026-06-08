@@ -29,17 +29,17 @@ function validateZone(zone: { latitude?: number; longitude?: number; radius_mete
 export async function createZone(zone: Omit<Zone, 'id'>): Promise<ServiceResult<Zone>> {
   const validationError = validateZone(zone);
   if (validationError) return { success: false, error: validationError };
-  const { data, error } = await supabase.from('zones').insert(zone).select().single();
+  const { data, error } = await supabase.from('zones').insert(zone).select();
   if (error) return { success: false, error: error.message, code: error.code };
-  return { success: true, data: data as Zone };
+  return { success: true, data: (data?.[0] as Zone) || (zone as Zone) };
 }
 
 export async function updateZone(id: string, zone: Partial<Zone>): Promise<ServiceResult<Zone>> {
   const validationError = validateZone(zone);
   if (validationError) return { success: false, error: validationError };
-  const { data, error } = await supabase.from('zones').update(zone).eq('id', id).select().single();
+  const { data, error } = await supabase.from('zones').update(zone).eq('id', id).select();
   if (error) return { success: false, error: error.message, code: error.code };
-  return { success: true, data: data as Zone };
+  return { success: true, data: (data?.[0] as Zone) || (zone as Zone) };
 }
 
 export async function deleteZone(id: string): Promise<ServiceResult<void>> {

@@ -72,10 +72,9 @@ export async function createWorker(worker: Omit<User, 'id'>): Promise<ServiceRes
   const { data, error } = await supabase
     .from('users')
     .insert({ ...worker, id: authUserId })
-    .select()
-    .single();
+    .select();
   if (error) return { success: false, error: error.message, code: error.code };
-  return { success: true, data: data as User };
+  return { success: true, data: (data?.[0] as User) || ({ ...worker, id: authUserId } as User) };
 }
 
 export async function updateWorker(id: string, worker: Partial<User>): Promise<ServiceResult<User>> {
@@ -94,9 +93,9 @@ export async function updateWorker(id: string, worker: Partial<User>): Promise<S
     }
   }
 
-  const { data, error } = await supabase.from('users').update(worker).eq('id', id).select().single();
+  const { data, error } = await supabase.from('users').update(worker).eq('id', id).select();
   if (error) return { success: false, error: error.message, code: error.code };
-  return { success: true, data: data as User };
+  return { success: true, data: (data?.[0] as User) || (worker as User) };
 }
 
 export async function deleteWorker(id: string): Promise<ServiceResult<void>> {

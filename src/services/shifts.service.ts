@@ -33,17 +33,17 @@ function validateShift(shift: { toleransi_menit?: number; jam_mulai?: string; ja
 export async function createShift(shift: Omit<Shift, 'id'>): Promise<ServiceResult<Shift>> {
   const validationError = validateShift(shift);
   if (validationError) return { success: false, error: validationError };
-  const { data, error } = await supabase.from('shifts').insert(shift).select().single();
+  const { data, error } = await supabase.from('shifts').insert(shift).select();
   if (error) return { success: false, error: error.message, code: error.code };
-  return { success: true, data: data as Shift };
+  return { success: true, data: (data?.[0] as Shift) || (shift as Shift) };
 }
 
 export async function updateShift(id: string, shift: Partial<Shift>): Promise<ServiceResult<Shift>> {
   const validationError = validateShift(shift);
   if (validationError) return { success: false, error: validationError };
-  const { data, error } = await supabase.from('shifts').update(shift).eq('id', id).select().single();
+  const { data, error } = await supabase.from('shifts').update(shift).eq('id', id).select();
   if (error) return { success: false, error: error.message, code: error.code };
-  return { success: true, data: data as Shift };
+  return { success: true, data: (data?.[0] as Shift) || (shift as Shift) };
 }
 
 export async function deleteShift(id: string): Promise<ServiceResult<void>> {
