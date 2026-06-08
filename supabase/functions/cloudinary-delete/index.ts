@@ -14,7 +14,7 @@ serve(async (req) => {
     const { public_id, resource_type } = await req.json();
 
     if (!public_id) {
-      return new Response(JSON.stringify({ error: "public_id required", debug: { received: { public_id, resource_type } } }), {
+      return new Response(JSON.stringify({ error: "public_id required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -26,12 +26,10 @@ serve(async (req) => {
 
     if (!cloudName || !apiKey || !apiSecret) {
       return new Response(JSON.stringify({
-        error: "Cloudinary not configured",
-        debug: {
-          hasCloudName: !!cloudName,
-          hasApiKey: !!apiKey,
-          hasApiSecret: !!apiSecret,
-        },
+        error: "Env vars missing",
+        hasCloudName: !!cloudName,
+        hasApiKey: !!apiKey,
+        hasApiSecret: !!apiSecret,
       }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -51,23 +49,20 @@ serve(async (req) => {
       body: JSON.stringify({ public_ids: [public_id] }),
     });
 
-    const data = await res.json();
+    const rawText = await res.text();
+    let data;
+    try { data = JSON.parse(rawText); } catch { data = { raw: rawText }; }
 
-    if (!res.ok) {
-      return new Response(JSON.stringify({
-        error: data.error?.message || "Delete failed",
-        debug: { status: res.status, cloudinary: data },
-      }), {
-        status: res.status,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response(JSON.stringify({ success: true, deleted: data.deleted, debug: { status: res.status, cloudinary: data } }), {
+    return new Response(JSON.stringify({
+      ok: res.ok,
+      status: res.status,
+      cloudinary_response: data,
+      requested: { public_id, resource_type: rt, endpoint: url },
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message, stack: err.stack }), {
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
