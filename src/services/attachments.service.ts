@@ -38,8 +38,11 @@ async function deleteFromCloudinary(url: string): Promise<ServiceResult<void>> {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Delete failed' }));
+    console.error('[Cloudinary Delete] Failed:', err);
     return { success: false, error: err.error || 'Cloudinary delete failed' };
   }
+  const result = await res.json();
+  console.log('[Cloudinary Delete] Success:', result);
   return { success: true, data: undefined };
 }
 
