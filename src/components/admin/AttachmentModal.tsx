@@ -36,8 +36,15 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
     setVerifyingId(null);
   };
 
-  const handleDownload = (url: string) => {
-    window.open(url, '_blank');
+  const handleDownload = (url: string, filename?: string) => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.download = filename || 'download';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
@@ -67,7 +74,7 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
                         <Eye size={16} />
                       </button>
                     )}
-                    <button onClick={() => handleDownload(att.url)}
+                    <button onClick={() => handleDownload(att.url, att.nama_file)}
                       className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors" title="Download">
                       <Download size={16} />
                     </button>
@@ -101,7 +108,7 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
               className="max-w-full max-h-[80vh] rounded-xl object-contain shadow-2xl" />
             <div className="flex items-center gap-2">
               <p className="text-white text-sm bg-black/40 px-3 py-1 rounded-full">{attachments[previewIdx].nama_file}</p>
-              <button onClick={(e) => { e.stopPropagation(); handleDownload(attachments[previewIdx].url); }}
+              <button onClick={(e) => { e.stopPropagation(); handleDownload(attachments[previewIdx].url, attachments[previewIdx].nama_file); }}
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors" title="Download">
                 <Download size={16} />
               </button>
