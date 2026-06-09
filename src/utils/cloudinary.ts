@@ -8,6 +8,12 @@ interface CloudinaryResponse {
   resource_type: string;
 }
 
+function getResourceType(file: File): string {
+  if (file.type.startsWith('image/')) return 'image';
+  if (file.type.startsWith('video/')) return 'video';
+  return 'raw';
+}
+
 export async function uploadToCloudinary(
   file: File,
   folder: string,
@@ -20,6 +26,7 @@ export async function uploadToCloudinary(
     return { success: false, error: 'Cloudinary tidak dikonfigurasi. Periksa VITE_CLOUDINARY_CLOUD_NAME dan VITE_CLOUDINARY_UPLOAD_PRESET di .env.' };
   }
 
+  const resourceType = getResourceType(file);
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', uploadPreset);
@@ -27,7 +34,7 @@ export async function uploadToCloudinary(
 
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudName}/upload`);
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`);
 
     xhr.upload.addEventListener('progress', (e) => {
       if (e.lengthComputable && onProgress) {
