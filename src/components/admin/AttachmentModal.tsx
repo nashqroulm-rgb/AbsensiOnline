@@ -36,21 +36,8 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
     setVerifyingId(null);
   };
 
-  const handleDownload = async (att: Attachment) => {
-    try {
-      const res = await fetch(att.url);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = att.nama_file;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-    } catch {
-      window.open(att.url, '_blank');
-    }
+  const handleDownload = (url: string) => {
+    window.open(url, '_blank');
   };
 
   return (
@@ -80,7 +67,7 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
                         <Eye size={16} />
                       </button>
                     )}
-                    <button onClick={() => handleDownload(att)}
+                    <button onClick={() => handleDownload(att.url)}
                       className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors" title="Download">
                       <Download size={16} />
                     </button>
@@ -114,7 +101,7 @@ export default function AttachmentModal({ isOpen, onClose, attachments, userNama
               className="max-w-full max-h-[80vh] rounded-xl object-contain shadow-2xl" />
             <div className="flex items-center gap-2">
               <p className="text-white text-sm bg-black/40 px-3 py-1 rounded-full">{attachments[previewIdx].nama_file}</p>
-              <button onClick={(e) => { e.stopPropagation(); handleDownload(attachments[previewIdx]); }}
+              <button onClick={(e) => { e.stopPropagation(); handleDownload(attachments[previewIdx].url); }}
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors" title="Download">
                 <Download size={16} />
               </button>
