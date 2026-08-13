@@ -1,0 +1,49 @@
+name: Supabase Keepalive & Backup
+
+on:
+  schedule:
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install PostgreSQL client
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+    - name: Keepalive ping
+      env:
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      run: |
+        curl -s -o /dev/null -w "HTTP %{http_code}\n" \
+          -H "apikey: $SUPABASE_ANON_KEY" \
+          "https://iufmhtojfqrcmbdtazfq.supabase.co/rest/v1/users?limit=1"
+
+    - name: Create backup directory
+      run: mkdir -p backups
+
+    - name: Dump database
+      env:
+        DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
+      run: |
+        pg_dump "$DATABASE_URL" --format=custom --file=backups/backup_$(date +%Y%m%d_%H%M%S).dump
+
+    - name: Compress backup
+      run: gzip backups/*.dump
+
+    - name: Remove old backups (keep last 30)
+      run: |
+        cd backups
+        ls -t *.dump.gz | tail -n +31 | xargs -r rm
+
+    - name: Commit and push
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add backups/
+        git commit -m "Backup: $(date -u +%Y-%m-%dT%H:%M:%SZ)" || echo "No changes"
+        git push
