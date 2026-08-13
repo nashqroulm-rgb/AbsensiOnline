@@ -23,12 +23,20 @@ jobs:
           -H "apikey: $SUPABASE_ANON_KEY" \
           "https://iufmhtojfqrcmbdtazfq.supabase.co/rest/v1/users?limit=1"
 
+    - name: Get DB IPv4 address
+      id: get_ip
+      run: |
+        IP=$(getent ahosts db.iufmhtojfqrcmbdtazfq.supabase.co | grep -v ':' | head -1 | awk '{print $1}')
+        echo "DB_IPV4=$IP" >> $GITHUB_ENV
+
     - name: Create backup directory
       run: mkdir -p backups
 
     - name: Dump database
       env:
         DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
+        PGHOSTADDR: ${{ env.DB_IPV4 }}
+        PGSSLMODE: require
       run: |
         pg_dump "$DATABASE_URL" --format=custom --file=backups/backup_$(date +%Y%m%d_%H%M%S).dump
 
