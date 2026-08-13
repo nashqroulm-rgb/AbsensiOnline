@@ -26,11 +26,12 @@ jobs:
     - name: Get DB IPv4 address
       id: get_ip
       run: |
-        IP=$(dig +short A db.iufmhtojfqrcmbdtazfq.supabase.co | head -1)
+        IP=$(host -t A db.iufmhtojfqrcmbdtazfq.supabase.co | grep 'has address' | head -1 | awk '{print $4}')
         if [ -z "$IP" ]; then
           IP=$(getent ahosts db.iufmhtojfqrcmbdtazfq.supabase.co | grep -v ':' | head -1 | awk '{print $1}')
         fi
         echo "DB_IPV4=$IP" >> $GITHUB_ENV
+        echo "Resolved IP: $IP"
 
     - name: Create backup directory
       run: mkdir -p backups
