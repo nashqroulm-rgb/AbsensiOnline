@@ -29,14 +29,11 @@ jobs:
 
     - name: Dump database using Supabase CLI
       env:
-        SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         SUPABASE_PROJECT_REF: iufmhtojfqrcmbdtazfq
-        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       run: |
         mkdir -p backups
-        supabase db dump --project-ref "$SUPABASE_PROJECT_REF" --service-role-key "$SUPABASE_SERVICE_ROLE_KEY" --include-schemas public --format custom --file backups/backup_$(date +%Y%m%d_%H%M%S).sql
-        # Or use pg_dump if CLI not available
-        # For now, we fallback to pg_dump if CLI fails, but we skip IPv4 resolution
+        supabase db dump --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --schema public --file "backups/backup_$(date +%Y%m%d_%H%M%S).sql"
 
     - name: Create backup directory
       run: mkdir -p backups
