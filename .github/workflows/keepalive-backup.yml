@@ -35,25 +35,12 @@ jobs:
       run: |
         mkdir -p backups
         supabase db dump --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --schema public --file "backups/backup_$(date +%Y%m%d_%H%M%S).sql"
-
-    - name: Create backup directory
-      run: mkdir -p backups
-
-    - name: Dump database
-      env:
-        DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
-        PGHOSTADDR: ${{ env.DB_IPV4 }}
-        PGSSLMODE: require
-      run: |
-        pg_dump "$DATABASE_URL" --format=custom --file=backups/backup_$(date +%Y%m%d_%H%M%S).dump
-
-    - name: Compress backup
-      run: gzip backups/*.dump
+        gzip backups/*.sql
 
     - name: Remove old backups (keep last 30)
       run: |
         cd backups
-        ls -t *.dump.gz | tail -n +31 | xargs -r rm
+        ls -t *.sql.gz | tail -n +31 | xargs -r rm
 
     - name: Commit and push
       run: |
