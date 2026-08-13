@@ -14,8 +14,9 @@ jobs:
 
     - name: Install Supabase CLI
       run: |
-        curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz | tar -xzvf - supabase
-        sudo mv supabase /usr/local/bin/
+        curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz -o /tmp/supabase.tar.gz
+        tar -xzf /tmp/supabase.tar.gz -C /tmp
+        sudo mv /tmp/supabase /usr/local/bin/
         supabase --version
 
     - name: Keepalive ping
