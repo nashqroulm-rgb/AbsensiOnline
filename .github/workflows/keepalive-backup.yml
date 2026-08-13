@@ -12,8 +12,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install PostgreSQL client and DNS tools
-      run: sudo apt-get update && sudo apt-get install -y postgresql-client dnsutils
+    - name: Install Supabase CLI
+      run: |
+        curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz | tar -xzvf - supabase
+        sudo mv supabase /usr/local/bin/
+        supabase --version
 
     - name: Keepalive ping
       env:
@@ -23,19 +26,16 @@ jobs:
           -H "apikey: $SUPABASE_ANON_KEY" \
           "https://iufmhtojfqrcmbdtazfq.supabase.co/rest/v1/users?limit=1"
 
-    - name: Get DB IPv4 address
-      id: get_ip
+    - name: Dump database using Supabase CLI
+      env:
+        SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        SUPABASE_PROJECT_REF: iufmhtojfqrcmbdtazfq
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       run: |
-        # Try dig first (most reliable after installing dnsutils)
-        IP=$(dig +short A db.iufmhtojfqrcmbdtazfq.supabase.co 2>/dev/null | head -1)
-        if [ -z "$IP" ]; then
-          IP=$(host -t A db.iufmhtojfqrcmbdtazfq.supabase.co 2>/dev/null | grep 'has address' | head -1 | awk '{print $4}')
-        fi
-        if [ -z "$IP" ]; then
-          IP=$(getent ahosts db.iufmhtojfqrcmbdtazfq.supabase.co | grep -v ':' | head -1 | awk '{print $1}')
-        fi
-        echo "DB_IPV4=$IP" >> $GITHUB_ENV
-        echo "Resolved IP: $IP"
+        mkdir -p backups
+        supabase db dump --project-ref "$SUPABASE_PROJECT_REF" --service-role-key "$SUPABASE_SERVICE_ROLE_KEY" --include-schemas public --format custom --file backups/backup_$(date +%Y%m%d_%H%M%S).sql
+        # Or use pg_dump if CLI not available
+        # For now, we fallback to pg_dump if CLI fails, but we skip IPv4 resolution
 
     - name: Create backup directory
       run: mkdir -p backups
