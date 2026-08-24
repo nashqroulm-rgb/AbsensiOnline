@@ -56,7 +56,8 @@ export async function submitFaceEnrolment(
 export async function getPendingFaceProfiles(): Promise<ServiceResult<(FaceProfile & { user_nama: string })[]>> {
   const { data, error } = await supabase
     .from('face_profiles')
-    .select('*, users!inner(nama)')
+    // hint kolom wajib: tabel ini punya 2 FK ke users (user_id & verified_by)
+    .select('*, users!user_id(nama)')
     .eq('status', 'menunggu')
     .order('created_at');
   if (error) return { success: false, error: error.message, code: error.code };
