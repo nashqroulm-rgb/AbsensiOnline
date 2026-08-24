@@ -4,7 +4,7 @@ React + Vite + Tailwind attendance app: **admin dashboard** (`src/components/adm
 
 ## Status perbaikan
 
-Status kebenaran satu-satunya: **`FIXPLAN.md`** (v1.1+). Checklist lama `REMEDIATION_TASKS.md` tidak valid — jangan dipercaya. Centang task hanya setelah verifikasi langsung, sertakan bukti.
+Status kebenaran satu-satunya: **`FIXPLAN.md`** (v1.1+). Rencana anti-pemalsuan lokasi/identitas: **`ANTI_SPOOF_PLAN.md`** (Fase A lokasi-server, B selfie-identitas gratis, C Android Capacitor). Checklist lama `REMEDIATION_TASKS.md` tidak valid — jangan dipercaya. Centang task hanya setelah verifikasi langsung, sertakan bukti.
 
 ## Arsitektur singkat
 
