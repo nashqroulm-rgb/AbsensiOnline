@@ -1,4 +1,8 @@
-name: Supabase Keepalive & Backup
+name: Supabase Keepalive
+
+# FIXPLAN S6: dump database TIDAK BOLEH masuk repo (PII).
+# Yang dipertahankan hanya ping harian agar project Supabase
+# gratis tidak di-pause. Backup DB kelola di luar git.
 
 on:
   schedule:
@@ -9,45 +13,12 @@ jobs:
   maintain:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Install Supabase CLI
-      run: |
-        curl -fsSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz -o /tmp/supabase.tar.gz
-        tar -xzf /tmp/supabase.tar.gz -C /tmp
-        sudo mv /tmp/supabase /usr/local/bin/
-        supabase --version
-
     - name: Keepalive ping
       env:
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       run: |
         curl -s -o /dev/null -w "HTTP %{http_code}\n" \
           -H "apikey: $SUPABASE_ANON_KEY" \
-          "https://iufmhtojfqrcmbdtazfq.supabase.co/rest/v1/users?limit=1"
-
-    - name: Dump database using Supabase CLI
-      env:
-        SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        SUPABASE_PROJECT_REF: iufmhtojfqrcmbdtazfq
-        SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      run: |
-        mkdir -p backups
-        supabase db dump --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --schema public --file "backups/backup_$(date +%Y%m%d_%H%M%S).sql"
-        gzip backups/*.sql
-
-    - name: Remove old backups (keep last 30)
-      run: |
-        cd backups
-        ls -t *.sql.gz | tail -n +31 | xargs -r rm
-
-    - name: Commit and push
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add backups/
-        git commit -m "Backup: $(date -u +%Y-%m-%dT%H:%M:%SZ)" || echo "No changes"
-        git push
+          "https://iufmhtojfqrcmbdtazfq.supabase.co/rest/v1/zones?limit=1"
