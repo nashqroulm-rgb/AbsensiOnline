@@ -1,0 +1,24 @@
+name: Keep repo alive
+
+on:
+  schedule:
+    - cron: '0 0 1,15 * *'  # every 1st and 15th of each month
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update timestamp
+        run: |
+          echo "Last kept alive: $(date -u)" > .keepalive
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .keepalive
+          git commit -m "Keep repo alive [skip ci]" || echo "No changes"
+          git push
