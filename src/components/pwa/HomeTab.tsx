@@ -9,6 +9,7 @@ import { getShifts } from '../../services/shifts.service';
 import { createAttachment, incrementLampiranCount, deleteAttachment } from '../../services/attachments.service';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import { addToQueue, flushQueue, getPendingQueue } from '../../utils/offlineQueue';
+import { getMyFaceProfile, type FaceProfile } from '../../services/face.service';
 import { useAppSettings } from '../../hooks/useAppSettings';
 import { wibDayName } from '../../utils/wib';
 import type { Attachment, User, Zone, Shift } from '../../types';
@@ -75,6 +76,7 @@ export default function HomeTab() {
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const selfieInputRef = useRef<HTMLInputElement>(null); // ANTI_SPOOF B1
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -87,6 +89,14 @@ export default function HomeTab() {
   useEffect(() => {
     setQueueCount(getPendingQueue().length);
   }, []);
+
+  // ANTI_SPOOF B1: profil wajah utk gerbang selfie
+  const [faceProfile, setFaceProfile] = useState<FaceProfile | null | undefined>(undefined);
+  const [awaitingSelfie, setAwaitingSelfie] = useState(false);
+  useEffect(() => {
+    if (!user?.id) return;
+    getMyFaceProfile(user.id).then(r => setFaceProfile(r.success ? r.data : null));
+  }, [user?.id]);
 
   // FIXPLAN T6: flush antrean nyata saat kembali online, lalu resync dari server
   useEffect(() => {
@@ -249,8 +259,33 @@ export default function HomeTab() {
     });
   };
 
-  const handleCheckin = async () => {
-    if (!checkInAllowed || !userPos || !worker || !zone) return;
+  /** ANTI_SPOOF B1: gerbang selfie — wajah terverifikasi wajib foto diri. */
+  const onSelfiePicked = async (file: File) => {
+    if (!awaitingSelfie) return;
+    try {
+      setActionMessage(null);
+      const compressed = await imageCompression(file, { maxSizeMB: 0.35, maxWidthOrHeight: 960, useWebWorker: true });
+      const res = await uploadToCloudinary(compressed, `absensi/selfie/${user?.id || 'unknown'}`);
+      if (!res.success) {
+        toast(res.error, 'error');
+        setAwaitingSelfie(false);
+        return;
+      }
+      setAwaitingSelfie(false);
+      await handleCheckin(res.data.secure_url);
+    } catch {
+      toast('Gagal memproses selfie. Coba lagi.', 'error');
+      setAwaitingSelfie(false);
+    }
+  };
+
+  const handleCheckin = async (selfieUrl?: string) => {
+    if (!checkInAllowed || !userPos || !worker || !zone || loading) return;
+    if (isOnline && selfieUrl === undefined && faceProfile?.status === 'terverifikasi') {
+      setAwaitingSelfie(true);
+      selfieInputRef.current?.click();
+      return;
+    }
     setLoading(true);
     setActionMessage(null);
     try {
@@ -268,6 +303,8 @@ export default function HomeTab() {
         lng: userPos.lng,
         timestamp,
         accuracy: userPos.accuracy, // ANTI_SPOOF A1
+        selfie_url: selfieUrl,
+        selfie_status: selfieUrl ? 'menunggu' : 'tidak_ada',
       });
       if (!result.success) {
         // Gagal karena koneksi putus di tengah jalan → masuk antrean
@@ -597,6 +634,25 @@ export default function HomeTab() {
             )}
 
             {/* Check-in/out buttons */}
+            {checkState === 'not_checked_in' && !businessBlock && faceProfile !== undefined && (
+              faceProfile === null ? (
+                <p className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg p-2.5">
+                  🔒 Wajah belum terdaftar — daftar di tab Profil agar check-in terverifikasi.
+                </p>
+              ) : faceProfile.status === 'menunggu' ? (
+                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5">
+                  ⏳ Verifikasi wajah menunggu persetujuan admin — selfie belum diminta.
+                </p>
+              ) : faceProfile.status === 'terverifikasi' ? (
+                <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg p-2.5">
+                  ✓ Verifikasi wajah aktif — selfie akan diminta saat check-in.
+                </p>
+              ) : (
+                <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-2.5">
+                  ✗ Pendaftaran wajah ditolak admin — silakan daftar ulang di tab Profil.
+                </p>
+              )
+            )}
             {checkState === 'not_checked_in' && businessBlock && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700 flex items-start gap-2">
                 <AlertCircle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
@@ -605,8 +661,8 @@ export default function HomeTab() {
             )}
             {checkState === 'not_checked_in' && (
               <button
-                onClick={handleCheckin}
-                disabled={loading || !checkInAllowed || !!businessBlock}
+                onClick={() => void handleCheckin()}
+                disabled={loading || awaitingSelfie || !checkInAllowed || !!businessBlock}
                 className={`w-full h-12 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm ${
                   checkInAllowed
                     ? 'bg-green-600 hover:bg-green-700 text-white'
@@ -715,6 +771,8 @@ export default function HomeTab() {
               onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'foto')} />
             <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" className="hidden"
               onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'dokumen')} />
+            <input ref={selfieInputRef} type="file" accept="image/*" capture="user" className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void onSelfiePicked(f); }} />
 
             {uploadProgress !== null && (
               <div className="space-y-1">

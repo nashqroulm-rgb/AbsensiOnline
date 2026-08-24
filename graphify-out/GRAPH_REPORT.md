@@ -1,12 +1,12 @@
 # Graph Report - C:\Users\K4G3\Documents\Github\AbsensiOnline  (2026-08-25)
 
 ## Corpus Check
-- 49 files · ~57,540 words
+- 50 files · ~58,924 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 286 nodes · 428 edges · 37 communities detected
-- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 69 edges (avg confidence: 0.8)
+- 296 nodes · 446 edges · 38 communities detected
+- Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 76 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -47,12 +47,13 @@
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
 - [[_COMMUNITY_Community 36|Community 36]]
+- [[_COMMUNITY_Community 37|Community 37]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `StrategyHandler` - 14 edges
 2. `PrecacheController` - 13 edges
 3. `Router` - 11 edges
-4. `update()` - 9 edges
+4. `update()` - 11 edges
 5. `normalizeHandler()` - 7 edges
 6. `getFriendlyURL()` - 7 edges
 7. `loadData()` - 7 edges
@@ -83,23 +84,23 @@ Cohesion: 0.19
 Nodes (5): getFriendlyURL(), PrecacheStrategy, Strategy, StrategyHandler, toRequest()
 
 ### Community 2 - "Community 2"
-Cohesion: 0.11
-Nodes (17): createAttachment(), deleteAttachment(), deleteFromCloudinary(), extractCloudinaryPublicId(), getAttachmentsByAttendance(), incrementLampiranCount(), rejectAndDeleteAttachment(), updateAttachmentVerification() (+9 more)
+Cohesion: 0.14
+Nodes (17): submitCheckIn(), submitCheckOut(), uploadToCloudinary(), blockCheckIn(), formatTime(), handleCheckin(), handleCheckout(), onSelfiePicked() (+9 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.12
-Nodes (6): createCacheKey(), isInstance(), PrecacheController, RegExpRoute, waitUntil(), set()
+Nodes (16): createAttachment(), deleteAttachment(), deleteFromCloudinary(), extractCloudinaryPublicId(), getAttachmentsByAttendance(), incrementLampiranCount(), rejectAndDeleteAttachment(), updateAttachmentVerification() (+8 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.17
-Nodes (15): submitCheckIn(), submitCheckOut(), blockCheckIn(), formatTime(), handleCheckin(), handleCheckout(), queueCheckIn(), requestGPS() (+7 more)
+Cohesion: 0.12
+Nodes (6): createCacheKey(), isInstance(), PrecacheController, RegExpRoute, waitUntil(), set()
 
 ### Community 5 - "Community 5"
 Cohesion: 0.15
 Nodes (7): getOrCreateDefaultRouter(), hasMethod(), isOneOf(), isType(), normalizeHandler(), Route, Router
 
 ### Community 6 - "Community 6"
-Cohesion: 0.13
+Cohesion: 0.14
 Nodes (11): getAttendances(), getHistory(), load(), downloadCsv(), load(), load(), exportRekap(), loadData() (+3 more)
 
 ### Community 7 - "Community 7"
@@ -123,27 +124,27 @@ Cohesion: 0.2
 Nodes (5): getAppSettings(), updateAppSettings(), handleSave(), invalidateAppSettingsCache(), loadSettings()
 
 ### Community 12 - "Community 12"
-Cohesion: 0.29
-Nodes (6): createZone(), deleteZone(), updateZone(), validateZone(), handleDelete(), handleSaveZone()
+Cohesion: 0.22
+Nodes (7): getMyFaceProfile(), getPendingFaceProfiles(), setFaceProfileStatus(), submitFaceEnrolment(), submitFaceEnrol(), openFaceReview(), reviewFace()
 
 ### Community 13 - "Community 13"
-Cohesion: 0.5
-Nodes (0): 
+Cohesion: 0.29
+Nodes (6): createZone(), deleteZone(), updateZone(), validateZone(), handleDelete(), handleSaveZone()
 
 ### Community 14 - "Community 14"
 Cohesion: 0.5
 Nodes (0): 
 
 ### Community 15 - "Community 15"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 16 - "Community 16"
 Cohesion: 1.0
 Nodes (2): require(), singleRequire()
 
-### Community 16 - "Community 16"
-Cohesion: 0.67
-Nodes (0): 
-
 ### Community 17 - "Community 17"
-Cohesion: 1.0
+Cohesion: 0.67
 Nodes (0): 
 
 ### Community 18 - "Community 18"
@@ -222,62 +223,66 @@ Nodes (0):
 Cohesion: 1.0
 Nodes (0): 
 
+### Community 37 - "Community 37"
+Cohesion: 1.0
+Nodes (0): 
+
 ## Knowledge Gaps
-- **Thin community `Community 17`** (2 nodes): `App()`, `App.tsx`
+- **Thin community `Community 18`** (2 nodes): `App()`, `App.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 18`** (2 nodes): `Login.tsx`, `handleSubmit()`
+- **Thin community `Community 19`** (2 nodes): `Login.tsx`, `handleSubmit()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 19`** (2 nodes): `Dashboard.tsx`, `timeAgo()`
+- **Thin community `Community 20`** (2 nodes): `Dashboard.tsx`, `timeAgo()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 20`** (2 nodes): `GeofenceMap.tsx`, `GeofenceMap()`
+- **Thin community `Community 21`** (2 nodes): `GeofenceMap.tsx`, `GeofenceMap()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 21`** (2 nodes): `PWALayout.tsx`, `PWALayout()`
+- **Thin community `Community 22`** (2 nodes): `PWALayout.tsx`, `PWALayout()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 22`** (2 nodes): `ConfirmDialog.tsx`, `ConfirmDialog()`
+- **Thin community `Community 23`** (2 nodes): `ConfirmDialog.tsx`, `ConfirmDialog()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 23`** (2 nodes): `Toast.tsx`, `useToast()`
+- **Thin community `Community 24`** (2 nodes): `Toast.tsx`, `useToast()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 24`** (2 nodes): `cn.ts`, `cn()`
+- **Thin community `Community 25`** (2 nodes): `cn.ts`, `cn()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 25`** (1 nodes): `eslint.config.js`
+- **Thin community `Community 26`** (1 nodes): `eslint.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (1 nodes): `vite.config.ts`
+- **Thin community `Community 27`** (1 nodes): `vite.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (1 nodes): `registerSW.js`
+- **Thin community `Community 28`** (1 nodes): `registerSW.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (1 nodes): `main.tsx`
+- **Thin community `Community 29`** (1 nodes): `main.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (1 nodes): `vite-env.d.ts`
+- **Thin community `Community 30`** (1 nodes): `vite-env.d.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (1 nodes): `AdminLayout.tsx`
+- **Thin community `Community 31`** (1 nodes): `AdminLayout.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 31`** (1 nodes): `Modal.tsx`
+- **Thin community `Community 32`** (1 nodes): `Modal.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (1 nodes): `Toggle.tsx`
+- **Thin community `Community 33`** (1 nodes): `Toggle.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (1 nodes): `supabase.ts`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (1 nodes): `index.ts`
+- **Thin community `Community 34`** (1 nodes): `supabase.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 35`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 36`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 37`** (1 nodes): `index.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `update()` connect `Community 2` to `Community 4`, `Community 7`, `Community 8`, `Community 11`, `Community 12`?**
-  _High betweenness centrality (0.202) - this node is a cross-community bridge._
+- **Why does `update()` connect `Community 3` to `Community 2`, `Community 7`, `Community 8`, `Community 11`, `Community 12`, `Community 13`?**
+  _High betweenness centrality (0.223) - this node is a cross-community bridge._
 - **Why does `callAdminUser()` connect `Community 7` to `Community 1`?**
-  _High betweenness centrality (0.164) - this node is a cross-community bridge._
-- **Why does `updateWorker()` connect `Community 7` to `Community 2`?**
-  _High betweenness centrality (0.140) - this node is a cross-community bridge._
-- **Are the 8 inferred relationships involving `update()` (e.g. with `updateAttachmentVerification()` and `incrementLampiranCount()`) actually correct?**
-  _`update()` has 8 INFERRED edges - model-reasoned connections that need verification._
+  _High betweenness centrality (0.174) - this node is a cross-community bridge._
+- **Why does `updateWorker()` connect `Community 7` to `Community 3`?**
+  _High betweenness centrality (0.147) - this node is a cross-community bridge._
+- **Are the 10 inferred relationships involving `update()` (e.g. with `updateAttachmentVerification()` and `incrementLampiranCount()`) actually correct?**
+  _`update()` has 10 INFERRED edges - model-reasoned connections that need verification._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.11 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**
   _Cohesion score 0.12 - nodes in this community are weakly interconnected._

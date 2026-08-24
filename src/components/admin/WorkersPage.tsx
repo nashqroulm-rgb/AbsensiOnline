@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Download, ChevronLeft, ChevronRight, Edit2, Trash2, Eye, UserX, Key } from 'lucide-react';
 import type { User, Zone, Shift } from '../../types';
 import { getWorkers, createWorker, updateWorker, deleteWorker, resetWorkerPin } from '../../services/workers.service';
+import { getPendingFaceProfiles, setFaceProfileStatus, type FaceProfile } from '../../services/face.service';
 import { downloadCsv } from '../../utils/exportCsv';
 import { getZones } from '../../services/zones.service';
 import { getShifts } from '../../services/shifts.service';
@@ -170,6 +171,8 @@ export default function WorkersPage() {
   const [showResetPin, setShowResetPin] = useState(false);
   const [resetTarget, setResetTarget] = useState<User | null>(null);
   const [resetPin, setResetPin] = useState('');
+  const [showFaceReview, setShowFaceReview] = useState(false);
+  const [faceQueue, setFaceQueue] = useState<(FaceProfile & { user_nama: string })[] | null>(null);
   const [workers, setWorkers] = useState<User[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -260,6 +263,22 @@ export default function WorkersPage() {
     setShowResetPin(false);
     setResetTarget(null);
     setResetPin('');
+  };
+
+  // ANTI_SPOOF B1: antrean verifikasi wajah
+  const openFaceReview = async () => {
+    setFaceQueue(null);
+    setShowFaceReview(true);
+    const res = await getPendingFaceProfiles();
+    if (res.success) setFaceQueue(res.data);
+    else toast(res.error, 'error');
+  };
+
+  const reviewFace = async (id: string, status: 'terverifikasi' | 'ditolak') => {
+    const res = await setFaceProfileStatus(id, status);
+    if (!res.success) { toast(res.error, 'error'); return; }
+    setFaceQueue(prev => prev?.filter(f => f.id !== id) ?? prev);
+    toast(status === 'terverifikasi' ? 'Wajah disetujui.' : 'Pendaftaran ditolak.', 'success');
   };
 
   const handleDeleteWorker = async () => {
@@ -358,6 +377,10 @@ export default function WorkersPage() {
             className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40"
           >
             <Download size={15} /> Export
+          </button>
+          <button onClick={openFaceReview} disabled={faceQueue !== null && faceQueue.length === 0}
+            className="flex items-center gap-2 px-3 py-2 border border-purple-200 text-purple-700 hover:bg-purple-50 rounded-lg text-sm font-medium disabled:opacity-40">
+            Verifikasi Wajah {faceQueue?.length ? `(${faceQueue.length})` : ''}
           </button>
           <button onClick={() => { setEditUser(null); setShowForm(true); }}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">
@@ -500,6 +523,33 @@ export default function WorkersPage() {
         confirmLabel={toggleTarget?.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
         variant={toggleTarget?.status === 'aktif' ? 'danger' : 'primary'}
       />
+
+      {/* Antrean Verifikasi Wajah */}
+      <Modal isOpen={showFaceReview} onClose={() => setShowFaceReview(false)} title="Verifikasi Wajah" size="lg">
+        <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+          {faceQueue === null && <p className="text-sm text-gray-400">Memuat...</p>}
+          {faceQueue?.length === 0 && <p className="text-sm text-gray-400">Tidak ada pendaftaran menunggu.</p>}
+          {faceQueue?.map(fp => (
+            <div key={fp.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-gray-900">{fp.user_nama}</p>
+                <span className="text-xs text-gray-400">{fp.images.length} foto</span>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {fp.images.map((im, i) => (
+                  <img key={i} src={im.url} alt={`wajah-${i}`} className="w-20 h-20 object-cover rounded-lg border border-gray-200" />
+                ))}
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button onClick={() => void reviewFace(fp.id, 'ditolak')}
+                  className="flex-1 py-2 border border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs font-medium">Tolak</button>
+                <button onClick={() => void reviewFace(fp.id, 'terverifikasi')}
+                  className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium">Setujui</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
 
       {/* Reset PIN Modal */}
       <Modal isOpen={showResetPin} onClose={() => { setShowResetPin(false); setResetTarget(null); }} title="Reset PIN Pekerja" size="sm">

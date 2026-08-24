@@ -1,21 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Bell, MapPin, Clock, Briefcase, Calendar, Phone, Hash, ChevronRight } from 'lucide-react';
+import { LogOut, Bell, MapPin, Clock, Briefcase, Calendar, Phone, Hash, ChevronRight, Camera } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 import { useAuth } from '../../context/AuthContext';
 import { getWorkerById } from '../../services/workers.service';
 import { getZones } from '../../services/zones.service';
 import { getShifts } from '../../services/shifts.service';
 import { getHistory } from '../../services/attendance.service';
+import { getMyFaceProfile, submitFaceEnrolment, type FaceProfile } from '../../services/face.service';
+import { uploadToCloudinary } from '../../utils/cloudinary';
 import type { User, Zone, Shift } from '../../types';
 import Badge from '../ui/Badge';
 import Toggle from '../ui/Toggle';
 import Modal from '../ui/Modal';
+import { useToast } from '../ui/Toast';
 
 export default function ProfileTab() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  // ANTI_SPOOF B1: enrolment wajah
+  const faceInputRef = useRef<HTMLInputElement>(null);
+  const [faceProfile, setFaceProfile] = useState<FaceProfile | null | undefined>(undefined);
+  const [enrolImages, setEnrolImages] = useState<File[]>([]);
+  const [enrolBusy, setEnrolBusy] = useState(false);
   const [profile, setProfile] = useState<User | null>(user);
   const [zone, setZone] = useState<Zone | null>(null);
   const [shift, setShift] = useState<Shift | null>(null);
@@ -54,6 +64,43 @@ export default function ProfileTab() {
     };
     load();
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    getMyFaceProfile(user.id).then(r => setFaceProfile(r.success ? r.data : null));
+  }, [user?.id]);
+
+  const addFacePhoto = async (file: File) => {
+    if (enrolImages.length >= 3) return;
+    try {
+      const compressed = await imageCompression(file, { maxSizeMB: 0.35, maxWidthOrHeight: 960, useWebWorker: true });
+      setEnrolImages(prev => [...prev, compressed]);
+    } catch {
+      setEnrolImages(prev => [...prev, file]);
+    }
+  };
+
+  const submitFaceEnrol = async () => {
+    if (!user?.id || enrolImages.length === 0 || enrolBusy) return;
+    setEnrolBusy(true);
+    try {
+      const images = [];
+      for (let i = 0; i < enrolImages.length; i++) {
+        const res = await uploadToCloudinary(enrolImages[i], `absensi/face/${user.id}`);
+        if (!res.success) throw new Error(res.error);
+        images.push({ url: res.data.secure_url, created_at: new Date().toISOString() });
+      }
+      const result = await submitFaceEnrolment(user.id, images);
+      if (!result.success) throw new Error(result.error);
+      setFaceProfile(result.data);
+      setEnrolImages([]);
+      toast('Pendaftaran wajah terkirim — menunggu verifikasi admin.', 'success');
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Gagal mendaftarkan wajah.', 'error');
+    } finally {
+      setEnrolBusy(false);
+    }
+  };
 
   const bergabungDate = profile?.bergabung_sejak
     ? new Date(profile.bergabung_sejak).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -170,6 +217,52 @@ export default function ProfileTab() {
               <Toggle checked={notifEnabled} onChange={setNotifEnabled} />
             </div>
           </div>
+        </div>
+
+        {/* ANTI_SPOOF B1: Verifikasi Wajah */}
+        <div className="bg-white rounded-xl px-4 py-4 shadow-sm border border-black/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+              <Camera size={15} className="text-purple-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-400">Verifikasi Wajah</p>
+              <p className="text-sm font-medium text-gray-800">
+                {faceProfile === undefined ? 'Memuat...'
+                 : faceProfile === null ? 'Belum terdaftar'
+                 : faceProfile.status === 'terverifikasi' ? 'Terverifikasi ✓'
+                 : faceProfile.status === 'menunggu' ? 'Menunggu verifikasi admin'
+                 : 'Ditolak — daftar ulang'}
+              </p>
+            </div>
+            <Badge variant={faceProfile?.status === 'terverifikasi' ? 'green' : faceProfile?.status === 'menunggu' ? 'amber' : faceProfile?.status === 'ditolak' ? 'red' : 'gray'}>
+              {faceProfile ? faceProfile.status : '-'}
+            </Badge>
+          </div>
+
+          {(faceProfile === null || faceProfile?.status === 'ditolak') && (
+            <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
+              <p className="text-xs text-gray-500">Ambil 3 foto diri (selfie) sebagai referensi. Admin akan memverifikasi.</p>
+              <input ref={faceInputRef} type="file" accept="image/*" capture="user" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void addFacePhoto(f); }} />
+              <div className="flex items-center gap-2">
+                <button onClick={() => faceInputRef.current?.click()} disabled={enrolImages.length >= 3 || enrolBusy}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-purple-50 hover:bg-purple-100 disabled:opacity-40 border border-purple-200 text-purple-700 rounded-lg text-xs font-medium">
+                  <Camera size={13} /> Ambil Foto ({enrolImages.length}/3)
+                </button>
+                {enrolImages.map((f, i) => (
+                  <img key={i} src={URL.createObjectURL(f)} alt={`ref-${i}`}
+                    className="w-10 h-10 object-cover rounded-lg border border-gray-200" />
+                ))}
+              </div>
+              {enrolImages.length > 0 && (
+                <button onClick={submitFaceEnrol} disabled={enrolBusy}
+                  className="w-full py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-lg text-sm font-medium">
+                  {enrolBusy ? 'Mengunggah...' : `Kirim ${enrolImages.length} Foto untuk Verifikasi`}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Logout */}

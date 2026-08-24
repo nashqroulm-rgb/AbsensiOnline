@@ -231,7 +231,9 @@ Fase C (C1→C4, jalur Android)                       ── 2–3 sesi (butuh d
   - *Verifikasi runtime menyusul setelah `supabase db push` migrasi 016*
 
 **Fase B**
-- [ ] B1 enrolment + capture selfie + antrean review admin · [ ] Spike B2.0 go/no-go (bukti durasi/memori) · [ ] B2 verify-face + threshold terkalibrasi
+- [x] B1 enrolment + capture selfie + antrean review admin (migrasi 017; face.service; ProfileTab "Verifikasi Wajah"; HomeTab gerbang selfie saat check-in; WorkersPage modal antrean) — *verifikasi runtime setelah `db push` 017*
+- [ ] Spike B2.0 go/no-go (bukti durasi/memori) · [ ] B2 verify-face + threshold terkalibrasi
+- [x] D11=soft-block · D12=latar dihapus · D13=B1 dulu · D14=iOS accepted-risk (disetujui user, sesi ini)
 
 **Fase C**
 - [ ] C1 scaffold · [ ] C2 geo native + mock flag · [ ] C3 Play Integrity · [ ] C4 distribusi APK

@@ -12,6 +12,9 @@ export interface CheckInPayload {
   timestamp: string;
   /** ANTI_SPOOF A1: akurasi GPS (meter) dari device */
   accuracy?: number;
+  /** ANTI_SPOOF B1 */
+  selfie_url?: string;
+  selfie_status?: 'menunggu' | 'tidak_ada';
 }
 
 export async function getAttendances(since?: string): Promise<ServiceResult<Attendance[]>> {
@@ -57,6 +60,8 @@ export async function submitCheckIn(
     latitude_in: payload.lat,
     longitude_in: payload.lng,
     accuracy_in: payload.accuracy,
+    selfie_url: payload.selfie_url ?? null,
+    selfie_status: payload.selfie_status ?? 'tidak_ada',
     lampiran_count: 0,
   });
 
