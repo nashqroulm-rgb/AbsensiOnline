@@ -8,6 +8,7 @@ import { getShifts } from '../../services/shifts.service';
 import { getZones } from '../../services/zones.service';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
+import { wibToday } from '../../utils/wib';
 import type { ActivityFeed, WeeklyData, Attendance, User, Shift, Zone } from '../../types';
 
 function StatCard({ icon: Icon, label, value, sub, color, trend }: {
@@ -105,7 +106,7 @@ export default function Dashboard() {
 
   const totalWorkers = workers.filter(u => u.role === 'worker').length;
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = wibToday(); // FIXPLAN U1: kalender WIB
   const checkedIn = attendances.filter(a => a.checkin_at?.startsWith(today));
 
   const hadir = checkedIn.filter(a => a.status === 'hadir').length;
@@ -154,7 +155,8 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={Users} label="Total Pekerja" value={totalWorkers} color="#2563EB" sub="Aktif & nonaktif" />
-        <StatCard icon={UserCheck} label="Hadir Hari Ini" value={hadir} color="#16A34A" sub={`${Math.round(hadir / 10 * 100)}% dari total`} trend="+2 dari kemarin" />
+        <StatCard icon={UserCheck} label="Hadir Hari Ini" value={hadir} color="#16A34A"
+          sub={`${totalWorkers > 0 ? Math.round((hadir / totalWorkers) * 100) : 0}% dari total`} />
         <StatCard icon={AlertCircle} label="Terlambat" value={terlambat} color="#D97706" sub={`${terlambat} pekerja`} />
         <StatCard icon={UserX} label="Tidak Hadir" value={absen} color="#DC2626" sub={`${absen} pekerja`} />
       </div>

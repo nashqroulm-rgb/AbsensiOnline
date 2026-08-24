@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Download, FileSpreadsheet, FileText, TrendingUp, TrendingDown } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Download, FileSpreadsheet } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { getMonthlyReport, getReportSummary } from '../../services/reports.service';
+import { getMonthlyReport } from '../../services/reports.service';
 import { getAttendances } from '../../services/attendance.service';
 import { getZones } from '../../services/zones.service';
 import type { MonthlyReport, Attendance, Zone } from '../../types';
 import Badge from '../ui/Badge';
+import { downloadCsv } from '../../utils/exportCsv';
 
 export default function ReportsPage() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -14,28 +15,37 @@ export default function ReportsPage() {
   const [zones, setZones] = useState<Zone[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [monthlyReport, setMonthlyReport] = useState<MonthlyReport[]>([]);
-  const [summary, setSummary] = useState({
-    totalHadir: 0,
-    avgKehadiran: 0,
-    totalTerlambat: 0,
-    totalAbsen: 0,
-  });
 
   useEffect(() => {
     const loadData = async () => {
-      const [reportResult, summaryResult, attResult, zoneResult] = await Promise.all([
-        getMonthlyReport(),
-        getReportSummary(),
+      // FIXPLAN T3: periode + zona benar-benar dikirim ke server
+      const [reportResult, attResult, zoneResult] = await Promise.all([
+        getMonthlyReport(year, month, filterZona || undefined),
         getAttendances(),
         getZones(),
       ]);
       if (reportResult.success) setMonthlyReport(reportResult.data);
-      if (summaryResult.success) setSummary(summaryResult.data);
       if (attResult.success) setAttendances(attResult.data);
       if (zoneResult.success) setZones(zoneResult.data);
     };
     loadData();
-  }, []);
+  }, [year, month, filterZona]);
+
+  /** FIXPLAN B05/T5: ringkasan diturunkan dari data yang sama — tanpa angka palsu. */
+  const summary = useMemo(() => ({
+    totalHadir: monthlyReport.reduce((a, r) => a + r.hadir, 0),
+    avgKehadiran: monthlyReport.length > 0
+      ? Math.round(monthlyReport.reduce((a, r) => a + r.persentase_kehadiran, 0) / monthlyReport.length)
+      : 0,
+    totalTerlambat: monthlyReport.reduce((a, r) => a + r.terlambat, 0),
+    totalAbsen: monthlyReport.reduce((a, r) => a + r.absen, 0),
+  }), [monthlyReport]);
+
+  const exportRekap = () => downloadCsv(
+    `rekap-${year}-${String(month).padStart(2, '0')}.csv`,
+    ['No', 'Nama', 'Zona', 'Hadir', 'Terlambat', 'Izin', 'Absen', 'Libur', 'Total HK', '% Kehadiran'],
+    monthlyReport.map((r, i) => [i + 1, r.nama, r.zona, r.hadir, r.terlambat, r.izin, r.absen, r.libur, r.total_hari_kerja, r.persentase_kehadiran]),
+  );
 
   const zoneBarData = (() => {
     const zoneMap = new Map(zones.map(z => [z.id, z.nama]));
@@ -96,11 +106,9 @@ export default function ReportsPage() {
             </select>
           </div>
           <div className="flex gap-2 ml-auto">
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">
-              <FileSpreadsheet size={15} /> Export Excel
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">
-              <FileText size={15} /> Export PDF
+            <button onClick={exportRekap} disabled={monthlyReport.length === 0}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white rounded-lg text-sm font-medium">
+              <FileSpreadsheet size={15} /> Export CSV
             </button>
           </div>
         </div>
@@ -109,18 +117,13 @@ export default function ReportsPage() {
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Hari Hadir', value: summary.totalHadir, icon: '📅', color: '#16A34A', trend: '+5%' },
-          { label: 'Rata-rata Kehadiran', value: `${summary.avgKehadiran}%`, icon: '📊', color: '#2563EB', trend: '+2%' },
-          { label: 'Total Terlambat', value: summary.totalTerlambat, icon: '⏰', color: '#D97706', trend: '-3%' },
-          { label: 'Total Absen', value: summary.totalAbsen, icon: '❌', color: '#DC2626', trend: '+1%' },
+          { label: 'Total Hari Hadir', value: summary.totalHadir, icon: '📅', color: '#16A34A' },
+          { label: 'Rata-rata Kehadiran', value: `${summary.avgKehadiran}%`, icon: '📊', color: '#2563EB' },
+          { label: 'Total Terlambat', value: summary.totalTerlambat, icon: '⏰', color: '#D97706' },
+          { label: 'Total Absen', value: summary.totalAbsen, icon: '❌', color: '#DC2626' },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-            <div className="flex items-start justify-between">
-              <span className="text-2xl">{s.icon}</span>
-              <span className={`text-xs font-medium flex items-center gap-1 ${s.trend.startsWith('+') ? (s.label.includes('Terlambat') || s.label.includes('Absen') ? 'text-red-500' : 'text-green-500') : 'text-green-500'}`}>
-                {s.trend.startsWith('+') ? <TrendingUp size={12} /> : <TrendingDown size={12} />} {s.trend}
-              </span>
-            </div>
+            <span className="text-2xl">{s.icon}</span>
             <p className="text-2xl font-bold mt-2" style={{ color: s.color }}>{s.value}</p>
             <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
           </div>
@@ -150,7 +153,8 @@ export default function ReportsPage() {
           <h3 className="font-semibold text-gray-900 text-sm">
             Rekap Kehadiran — {months[month - 1]} {year}
           </h3>
-          <button className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700">
+          <button onClick={exportRekap} disabled={monthlyReport.length === 0}
+            className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-40">
             <Download size={13} /> Download CSV
           </button>
         </div>

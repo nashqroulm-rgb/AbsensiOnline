@@ -1,16 +1,26 @@
 import { supabase } from '../config/supabase';
 import type { MonthlyReport, WeeklyData, ActivityFeed, ServiceResult } from '../types';
+import { wibMonthRange, wibToday } from '../utils/wib';
 
-export async function getMonthlyReport(): Promise<ServiceResult<MonthlyReport[]>> {
+/** FIXPLAN T3/U1 — laporan per bulan kalender WIB + filter zona opsional. */
+export async function getMonthlyReport(
+  year?: number,
+  month1to12?: number,
+  zonaId?: string,
+): Promise<ServiceResult<MonthlyReport[]>> {
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+  const y = year ?? now.getFullYear();
+  const m = month1to12 ?? now.getMonth() + 1;
+  const { start, end } = wibMonthRange(y, m);
 
-  const { data: attendances, error: attError } = await supabase
+  let query = supabase
     .from('attendances')
     .select('user_id, user_nama, zona_id, status, checkin_at')
-    .gte('checkin_at', startOfMonth)
-    .lte('checkin_at', endOfMonth);
+    .gte('checkin_at', start)
+    .lt('checkin_at', end);
+  if (zonaId) query = query.eq('zona_id', zonaId);
+
+  const { data: attendances, error: attError } = await query;
 
   if (attError) return { success: false, error: attError.message, code: attError.code };
 
@@ -60,11 +70,10 @@ export async function getMonthlyReport(): Promise<ServiceResult<MonthlyReport[]>
 }
 
 export async function getWeeklyData(): Promise<ServiceResult<WeeklyData[]>> {
-  const now = new Date();
-  const dayOfWeek = now.getDay();
-  const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-  startOfWeek.setHours(0, 0, 0, 0);
+  // FIXPLAN U1: minggu dimulai Senin WIB
+  const startOfWeek = new Date(Date.parse(`${wibToday()}T00:00:00+07:00`));
+  const dow = (startOfWeek.getUTCDay() + 6) % 7; // 0=Senin
+  startOfWeek.setUTCDate(startOfWeek.getUTCDate() - dow);
 
   const { data: attendances, error } = await supabase
     .from('attendances')
@@ -121,27 +130,4 @@ export async function getActivityFeed(): Promise<ServiceResult<ActivityFeed[]>> 
   });
 
   return { success: true, data: feed };
-}
-
-export async function getReportSummary(): Promise<ServiceResult<{
-  totalHadir: number;
-  avgKehadiran: number;
-  totalTerlambat: number;
-  totalAbsen: number;
-}>> {
-  const monthly = await getMonthlyReport();
-  if (!monthly.success) return { success: false, error: monthly.error };
-
-  const data = monthly.data;
-  return {
-    success: true,
-    data: {
-      totalHadir: data.reduce((a, r) => a + r.hadir, 0),
-      avgKehadiran: data.length > 0
-        ? Math.round(data.reduce((a, r) => a + r.persentase_kehadiran, 0) / data.length)
-        : 0,
-      totalTerlambat: data.reduce((a, r) => a + r.terlambat, 0),
-      totalAbsen: data.reduce((a, r) => a + r.absen, 0),
-    },
-  };
 }

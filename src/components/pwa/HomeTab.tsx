@@ -6,8 +6,11 @@ import { submitCheckIn, submitCheckOut, getTodayAttendance } from '../../service
 import { getWorkerById } from '../../services/workers.service';
 import { getZones } from '../../services/zones.service';
 import { getShifts } from '../../services/shifts.service';
-import { createAttachment, incrementLampiranCount } from '../../services/attachments.service';
+import { createAttachment, incrementLampiranCount, deleteAttachment } from '../../services/attachments.service';
 import { uploadToCloudinary } from '../../utils/cloudinary';
+import { addToQueue, flushQueue, getPendingQueue } from '../../utils/offlineQueue';
+import { useAppSettings } from '../../hooks/useAppSettings';
+import { wibDayName } from '../../utils/wib';
 import type { Attachment, User, Zone, Shift } from '../../types';
 import GeofenceMap from './GeofenceMap';
 import Badge from '../ui/Badge';
@@ -26,6 +29,7 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
 export default function HomeTab() {
   const { currentUser } = useAuth();
   const { toast } = useToast();
+  const { settings } = useAppSettings(); // FIXPLAN T7
   const [worker, setWorker] = useState<User | null>(currentUser);
   const [zone, setZone] = useState<Zone | null>(null);
   const [shift, setShift] = useState<Shift | null>(null);
@@ -65,8 +69,8 @@ export default function HomeTab() {
   const [distance, setDistance] = useState<number | null>(null);
   const [inRange, setInRange] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [pendingSync, setPendingSync] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [queueCount, setQueueCount] = useState(0); // FIXPLAN T6: jumlah antrean nyata
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,10 +85,25 @@ export default function HomeTab() {
   }, []);
 
   useEffect(() => {
-    if (isOnline && pendingSync) {
-      setTimeout(() => { setPendingSync(false); }, 2000);
-    }
-  }, [isOnline, pendingSync]);
+    setQueueCount(getPendingQueue().length);
+  }, []);
+
+  // FIXPLAN T6: flush antrean nyata saat kembali online, lalu resync dari server
+  useEffect(() => {
+    if (!isOnline) return;
+    const pending = getPendingQueue().filter(i => !i.synced);
+    if (pending.length === 0) return;
+    flushQueue().then(flushed => {
+      setQueueCount(getPendingQueue().length);
+      if (flushed > 0 && currentUser?.id) {
+        getTodayAttendance(currentUser.id).then(result => {
+          if (!result.success || !result.data) return;
+          setActiveAttendanceId(result.data.id);
+          setCheckinTime(new Date(result.data.timestamp));
+        });
+      }
+    });
+  }, [isOnline, currentUser?.id]);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30000);
@@ -156,7 +175,7 @@ export default function HomeTab() {
           blockCheckIn('Lokasi tidak dapat dideteksi. Check-in diblokir.');
         }
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+      { enableHighAccuracy: true, timeout: settings.gps_timeout_ms, maximumAge: 0 },
     );
   };
 
@@ -200,8 +219,33 @@ export default function HomeTab() {
       navigator.geolocation.getCurrentPosition(
         (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
         reject,
-        { enableHighAccuracy: true, timeout: 10000 },
+        { enableHighAccuracy: true, timeout: settings.gps_timeout_ms },
       );
+    });
+  };
+
+  const queueCheckIn = (timestamp: string) => {
+    if (!worker || !zone || !userPos) return;
+    addToQueue({
+      type: 'checkin',
+      timestamp,
+      payload: {
+        workerId: worker.id,
+        zoneId: zone.id,
+        shiftId: worker.shift_id,
+        workerName: worker.nama,
+        lat: userPos.lat,
+        lng: userPos.lng,
+        timestamp,
+      },
+    });
+    setQueueCount(getPendingQueue().length);
+    setActiveAttendanceId(null);
+    setCheckinTime(new Date(timestamp));
+    setCheckState('checked_in');
+    setActionMessage({
+      type: 'success',
+      text: `Offline: check-in masuk antrean (${getPendingQueue().length} menunggu), otomatis dikirim saat online.`,
     });
   };
 
@@ -211,6 +255,10 @@ export default function HomeTab() {
     setActionMessage(null);
     try {
       const timestamp = new Date().toISOString();
+      if (!isOnline) {
+        queueCheckIn(timestamp);
+        return;
+      }
       const result = await submitCheckIn({
         workerId: worker.id,
         zoneId: zone.id,
@@ -221,6 +269,8 @@ export default function HomeTab() {
         timestamp,
       });
       if (!result.success) {
+        // Gagal karena koneksi putus di tengah jalan → masuk antrean
+        if (!navigator.onLine) { queueCheckIn(timestamp); return; }
         setActionMessage({ type: 'error', text: 'Check-in gagal disimpan. Coba lagi.' });
         return;
       }
@@ -230,9 +280,8 @@ export default function HomeTab() {
       setCheckState('checked_in');
       setActionMessage({
         type: 'success',
-        text: `Check-in berhasil pukul ${formatTime(checkinDate)}. Data tersimpan${!isOnline ? ' secara lokal' : ''}.`,
+        text: `Check-in berhasil pukul ${formatTime(checkinDate)}.`,
       });
-      if (!isOnline) setPendingSync(true);
     } catch {
       setActionMessage({ type: 'error', text: 'Check-in gagal disimpan. Coba lagi.' });
     } finally {
@@ -243,6 +292,11 @@ export default function HomeTab() {
   const handleCheckout = async () => {
     if (!activeAttendanceId) {
       setActionMessage({ type: 'error', text: 'Data check-in tidak ditemukan.' });
+      return;
+    }
+    // FIXPLAN T6: checkout butuh record server — tidak diantrikan
+    if (!isOnline) {
+      setActionMessage({ type: 'error', text: 'Check-out butuh koneksi internet. Coba lagi saat online.' });
       return;
     }
     setLoading(true);
@@ -266,7 +320,6 @@ export default function HomeTab() {
         type: 'success',
         text: `Check-out berhasil pukul ${formatTime(checkoutDate)}.`,
       });
-      if (!isOnline) setPendingSync(true);
     } catch {
       setActionMessage({
         type: 'error',
@@ -278,10 +331,11 @@ export default function HomeTab() {
   };
 
   const handleUpload = async (file: File, type: 'foto' | 'dokumen') => {
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
-    const MAX_FILES_PER_DAY = 10;
-    const MAX_PHOTOS_PER_DAY = 5;
-    const MAX_DOCS_PER_DAY = 5;
+    // FIXPLAN T7: batas dari app_settings
+    const MAX_FILE_SIZE = settings.max_file_size_mb * 1024 * 1024;
+    const MAX_FILES_PER_DAY = settings.max_attachments_per_day;
+    const MAX_PHOTOS_PER_DAY = settings.max_photos_per_day;
+    const MAX_DOCS_PER_DAY = settings.max_docs_per_day;
 
     if (file.size > MAX_FILE_SIZE) {
       toast(`Ukuran file maksimal 5MB (${type === 'foto' ? 'foto' : 'dokumen'})`, 'warning');
@@ -358,15 +412,25 @@ export default function HomeTab() {
     setUploadProgress(null);
   };
 
-  const removeAttachment = (id: string) => {
-    setAttachments(prev => {
-      const att = prev.find(a => a.id === id);
-      if (att && att.url.startsWith('blob:')) {
-        URL.revokeObjectURL(att.url);
-      }
-      return prev.filter(a => a.id !== id);
-    });
+  /** FIXPLAN U3: hapus row DB via policy attachments_delete_own.
+   * ponytail: file di Cloudinary dibiarkan (butuh secret API); bersihkan
+   * berkala dari sisi admin bila menumpuk. */
+  const removeAttachment = async (id: string) => {
+    setAttachments(prev => prev.filter(a => a.id !== id));
+    await deleteAttachment(id);
   };
+
+  // FIXPLAN T8: aturan bisnis — absensi_online & hari_kerja
+  const businessBlock = (() => {
+    if (worker && worker.absensi_online === false) {
+      return 'Absensi online dinonaktifkan oleh admin. Hubungi admin Anda.';
+    }
+    if (shift && Array.isArray(shift.hari_kerja) && shift.hari_kerja.length > 0
+      && !shift.hari_kerja.includes(wibDayName(now))) {
+      return `Hari ini (${wibDayName(now)}) bukan hari kerja shift Anda.`;
+    }
+    return null;
+  })();
 
   const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const shiftActive = shift ? (() => {
@@ -414,12 +478,12 @@ export default function HomeTab() {
           )}
         </div>
 
-        {/* Pending Sync Banner */}
-        {pendingSync && (
+        {/* Pending Sync Banner — FIXPLAN T6 */}
+        {queueCount > 0 && (
           <div className="mx-4 mb-3 bg-amber-500/20 border border-amber-500/30 rounded-lg px-3 py-2 flex items-center gap-2">
             <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
             <span className="text-amber-300 text-xs font-medium">
-              {isOnline ? 'Menyinkronkan data...' : 'Menunggu Sync · Data tersimpan lokal'}
+              {isOnline ? 'Menyinkronkan data...' : `${queueCount} check-in menunggu sync · tersimpan lokal`}
             </span>
           </div>
         )}
@@ -531,10 +595,16 @@ export default function HomeTab() {
             )}
 
             {/* Check-in/out buttons */}
+            {checkState === 'not_checked_in' && businessBlock && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700 flex items-start gap-2">
+                <AlertCircle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
+                {businessBlock}
+              </div>
+            )}
             {checkState === 'not_checked_in' && (
               <button
                 onClick={handleCheckin}
-                disabled={loading || !checkInAllowed}
+                disabled={loading || !checkInAllowed || !!businessBlock}
                 className={`w-full h-12 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm ${
                   checkInAllowed
                     ? 'bg-green-600 hover:bg-green-700 text-white'
@@ -609,7 +679,7 @@ export default function HomeTab() {
               </div>
               <span className="text-sm font-semibold text-gray-900">Lampiran</span>
             </div>
-            <span className="text-xs text-gray-400">{attachments.length}/10 file</span>
+            <span className="text-xs text-gray-400">{attachments.length}/{settings.max_attachments_per_day} file</span>
           </div>
 
           <div className="p-4 space-y-3">
@@ -618,17 +688,22 @@ export default function HomeTab() {
                 <WifiOff size={12} /> Upload tersedia saat online
               </div>
             )}
+            {checkState !== 'checked_in' && isOnline && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-xs text-gray-600 flex items-center gap-2">
+                📎 Lampiran menempel pada absensi hari ini — check-in dulu.
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => isOnline && photoInputRef.current?.click()}
-                disabled={!isOnline || attachments.length >= 10}
+                disabled={!isOnline || checkState !== 'checked_in' || !activeAttendanceId || attachments.length >= settings.max_attachments_per_day}
                 className="flex items-center justify-center gap-2 h-10 bg-green-50 hover:bg-green-100 disabled:opacity-40 border border-green-200 text-green-700 rounded-lg text-xs font-medium transition-colors"
               >
                 <Camera size={14} /> Ambil Foto
               </button>
               <button
                 onClick={() => isOnline && fileInputRef.current?.click()}
-                disabled={!isOnline || attachments.length >= 10}
+                disabled={!isOnline || checkState !== 'checked_in' || !activeAttendanceId || attachments.length >= settings.max_attachments_per_day}
                 className="flex items-center justify-center gap-2 h-10 bg-blue-50 hover:bg-blue-100 disabled:opacity-40 border border-blue-200 text-blue-700 rounded-lg text-xs font-medium transition-colors"
               >
                 <Upload size={14} /> Upload Dokumen
@@ -674,7 +749,9 @@ export default function HomeTab() {
               </div>
             )}
             {attachments.length === 0 && uploadProgress === null && (
-              <p className="text-center text-gray-400 text-xs py-2">Belum ada lampiran hari ini</p>
+              <p className="text-center text-gray-400 text-xs py-2">
+                {checkState !== 'checked_in' ? 'Belum bisa upload — lakukan check-in dulu.' : 'Belum ada lampiran hari ini'}
+              </p>
             )}
           </div>
         </div>

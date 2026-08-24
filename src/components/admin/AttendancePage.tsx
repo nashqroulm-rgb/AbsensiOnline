@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, Fragment } from 'react';
 import { Search, Download, Eye, Edit2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getAttendances, getStatusLabel } from '../../services/attendance.service';
+import { getAttendances, getStatusLabel, updateAttendanceStatus } from '../../services/attendance.service';
 import { getShifts } from '../../services/shifts.service';
 import { getZones } from '../../services/zones.service';
 import { getAttachmentsByAttendance, updateAttachmentVerification, rejectAndDeleteAttachment } from '../../services/attachments.service';
@@ -10,6 +10,8 @@ import { getStatusBadgeVariant } from '../ui/Badge';
 import Modal from '../ui/Modal';
 import AttachmentModal from './AttachmentModal';
 import { useToast } from '../ui/Toast';
+import { downloadCsv } from '../../utils/exportCsv';
+import { wibDateOf, wibToday } from '../../utils/wib';
 
 const STATUS_OPTS: { value: string; label: string }[] = [
   { value: '', label: 'Semua Status' },
@@ -41,7 +43,7 @@ export default function AttendancePage() {
   const [filterZona, setFilterZona] = useState('');
   const [filterShift, setFilterShift] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
+  const [filterDate, setFilterDate] = useState(wibToday());
   const [page, setPage] = useState(1);
   const [selectedAtt, setSelectedAtt] = useState<Attendance | null>(null);
   const [showOverride, setShowOverride] = useState(false);
@@ -89,6 +91,19 @@ export default function AttendancePage() {
     }
   };
 
+  /** FIXPLAN T1 — simpan override; audit oleh/by diisi trigger DB. */
+  const handleSaveOverride = async () => {
+    if (!selectedAtt) return;
+    const res = await updateAttendanceStatus(selectedAtt.id, overrideStatus, overrideNote.trim() || undefined);
+    if (!res.success) { toast(res.error, 'error'); return; }
+    setAttendances(prev => prev.map(a =>
+      a.id === selectedAtt.id ? { ...a, status: overrideStatus, catatan: overrideNote.trim() || undefined } : a,
+    ));
+    toast('Status kehadiran diperbarui.', 'success');
+    setShowOverride(false);
+    setOverrideNote('');
+  };
+
   const PAGE_SIZE = 10;
 
   const filtered = useMemo(() => attendances.filter(a => {
@@ -96,8 +111,10 @@ export default function AttendancePage() {
     const matchZona = !filterZona || a.zona_id === filterZona;
     const matchShift = !filterShift || a.shift_id === filterShift;
     const matchStatus = !filterStatus || a.status === filterStatus;
-    return matchSearch && matchZona && matchShift && matchStatus;
-  }), [attendances, search, filterZona, filterShift, filterStatus]);
+    // FIXPLAN T2/U1: filter tanggal pakai kalender WIB
+    const matchDate = !filterDate || wibDateOf(a.checkin_at || a.client_timestamp || '') === filterDate;
+    return matchSearch && matchZona && matchShift && matchStatus && matchDate;
+  }), [attendances, search, filterDate, filterZona, filterShift, filterStatus]);
 
   const total = filtered.length;
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -154,7 +171,25 @@ export default function AttendancePage() {
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
             {STATUS_OPTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
-          <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
+          <button
+            onClick={() => downloadCsv(
+              `absensi-${filterDate}.csv`,
+              ['Nama', 'ID', 'Tanggal', 'Shift', 'Zona', 'Check-In', 'Check-Out', 'Durasi (menit)', 'Status'],
+              filtered.map(a => [
+                a.user_nama,
+                a.user_id,
+                a.checkin_at ? wibDateOf(a.checkin_at) : '',
+                shifts.find(s => s.id === a.shift_id)?.nama || '',
+                zones.find(z => z.id === a.zona_id)?.nama || '',
+                a.checkin_at || '',
+                a.checkout_at || '',
+                a.durasi_menit,
+                a.status,
+              ]),
+            )}
+            disabled={filtered.length === 0}
+            className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+          >
             <Download size={15} /> Export
           </button>
         </div>
@@ -278,7 +313,7 @@ export default function AttendancePage() {
           </div>
           <div className="flex gap-2">
             <button onClick={() => setShowOverride(false)} className="flex-1 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 font-medium">Batal</button>
-            <button onClick={() => setShowOverride(false)} className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">Simpan</button>
+            <button onClick={handleSaveOverride} className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">Simpan</button>
           </div>
         </div>
       </Modal>

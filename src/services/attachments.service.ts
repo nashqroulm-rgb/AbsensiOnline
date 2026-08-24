@@ -38,7 +38,7 @@ async function deleteFromCloudinary(url: string): Promise<ServiceResult<void>> {
   });
 
   const result = await res.json();
-  console.log('[Cloudinary Delete] Full response:', JSON.stringify(result, null, 2));
+  // console.log('[Cloudinary Delete] Full response:', JSON.stringify(result, null, 2)); // removed per audit
 
   if (!res.ok || !result.ok) {
     return { success: false, error: result.error || 'Cloudinary delete failed' };

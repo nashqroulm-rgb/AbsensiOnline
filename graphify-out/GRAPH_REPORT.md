@@ -1,12 +1,12 @@
 # Graph Report - C:\Users\K4G3\Documents\Github\AbsensiOnline  (2026-08-24)
 
 ## Corpus Check
-- 48 files · ~52,812 words
+- 50 files · ~54,830 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 272 nodes · 394 edges · 38 communities detected
-- Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 56 edges (avg confidence: 0.8)
+- 285 nodes · 419 edges · 38 communities detected
+- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 67 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -53,7 +53,7 @@
 1. `StrategyHandler` - 14 edges
 2. `PrecacheController` - 13 edges
 3. `Router` - 11 edges
-4. `update()` - 8 edges
+4. `update()` - 9 edges
 5. `normalizeHandler()` - 7 edges
 6. `getFriendlyURL()` - 7 edges
 7. `set()` - 7 edges
@@ -62,16 +62,16 @@
 10. `loadData()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `updateAppSettings()` --calls--> `update()`  [INFERRED]
-  C:\Users\K4G3\Documents\Github\AbsensiOnline\src\services\settings.service.ts → C:\Users\K4G3\Documents\Github\AbsensiOnline\src\components\pwa\HomeTab.tsx
+- `loadData()` --calls--> `getMonthlyReport()`  [INFERRED]
+  C:\Users\K4G3\Documents\Github\AbsensiOnline\src\components\admin\ReportsPage.tsx → C:\Users\K4G3\Documents\Github\AbsensiOnline\src\services\reports.service.ts
 - `loadData()` --calls--> `getWorkers()`  [INFERRED]
   C:\Users\K4G3\Documents\Github\AbsensiOnline\src\components\admin\WorkersPage.tsx → C:\Users\K4G3\Documents\Github\AbsensiOnline\src\services\workers.service.ts
 - `loadData()` --calls--> `getZones()`  [INFERRED]
   C:\Users\K4G3\Documents\Github\AbsensiOnline\src\components\admin\WorkersPage.tsx → C:\Users\K4G3\Documents\Github\AbsensiOnline\src\services\zones.service.ts
 - `loadData()` --calls--> `getShifts()`  [INFERRED]
   C:\Users\K4G3\Documents\Github\AbsensiOnline\src\components\admin\WorkersPage.tsx → C:\Users\K4G3\Documents\Github\AbsensiOnline\src\services\shifts.service.ts
-- `getMonthlyReport()` --calls--> `set()`  [INFERRED]
-  C:\Users\K4G3\Documents\Github\AbsensiOnline\src\services\reports.service.ts → C:\Users\K4G3\Documents\Github\AbsensiOnline\src\components\admin\ZonesPage.tsx
+- `set()` --calls--> `getMonthlyReport()`  [INFERRED]
+  C:\Users\K4G3\Documents\Github\AbsensiOnline\src\components\admin\ZonesPage.tsx → C:\Users\K4G3\Documents\Github\AbsensiOnline\src\services\reports.service.ts
 
 ## Communities
 
@@ -80,27 +80,27 @@ Cohesion: 0.07
 Nodes (25): addRoute(), cacheMatchIgnoreParams(), cacheWillUpdate(), canConstructResponseFromBodyStream(), copyResponse(), createHandlerBoundToURL(), Deferred, executeQuotaErrorCallbacks() (+17 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.17
+Cohesion: 0.19
 Nodes (5): getFriendlyURL(), PrecacheStrategy, Strategy, StrategyHandler, toRequest()
 
 ### Community 2 - "Community 2"
-Cohesion: 0.12
-Nodes (13): getAttendances(), getHistory(), getStatusLabel(), getStatusLabelAsync(), load(), load(), load(), getMonthlyReport() (+5 more)
+Cohesion: 0.11
+Nodes (15): createAttachment(), deleteFromCloudinary(), extractCloudinaryPublicId(), getAttachmentsByAttendance(), incrementLampiranCount(), rejectAndDeleteAttachment(), updateAttachmentVerification(), updateAttendanceStatus() (+7 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.12
 Nodes (6): createCacheKey(), isInstance(), PrecacheController, RegExpRoute, waitUntil(), set()
 
 ### Community 4 - "Community 4"
-Cohesion: 0.12
-Nodes (13): createAttachment(), deleteFromCloudinary(), extractCloudinaryPublicId(), getAttachmentsByAttendance(), incrementLampiranCount(), rejectAndDeleteAttachment(), updateAttachmentVerification(), handleDeleteAttachment() (+5 more)
+Cohesion: 0.16
+Nodes (13): submitCheckIn(), submitCheckOut(), blockCheckIn(), formatTime(), handleCheckin(), handleCheckout(), queueCheckIn(), requestGPS() (+5 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.16
-Nodes (12): submitCheckIn(), submitCheckOut(), blockCheckIn(), formatTime(), handleCheckin(), handleCheckout(), requestGPS(), resolvePosition() (+4 more)
+Cohesion: 0.13
+Nodes (13): getAttendances(), getHistory(), getStatusLabel(), getStatusLabelAsync(), load(), downloadCsv(), load(), load() (+5 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.16
+Cohesion: 0.15
 Nodes (7): getOrCreateDefaultRouter(), hasMethod(), isOneOf(), isType(), normalizeHandler(), Route, Router
 
 ### Community 7 - "Community 7"
@@ -112,35 +112,35 @@ Cohesion: 0.23
 Nodes (6): createShift(), deleteShift(), updateShift(), validateShift(), handleDelete(), handleSaveShift()
 
 ### Community 9 - "Community 9"
+Cohesion: 0.24
+Nodes (9): getTodayAttendance(), getMonthlyReport(), getWeeklyData(), wibDateOf(), wibDayName(), wibDayRange(), wibMonthRange(), wibParts() (+1 more)
+
+### Community 10 - "Community 10"
 Cohesion: 0.18
 Nodes (5): AuthProvider(), useAuth(), HistoryTab(), ProtectedRoute(), useAuthState()
 
-### Community 10 - "Community 10"
-Cohesion: 0.29
-Nodes (6): createZone(), deleteZone(), updateZone(), validateZone(), handleDelete(), handleSaveZone()
-
 ### Community 11 - "Community 11"
-Cohesion: 0.25
-Nodes (3): getAppSettings(), updateAppSettings(), loadSettings()
+Cohesion: 0.2
+Nodes (5): getAppSettings(), updateAppSettings(), handleSave(), invalidateAppSettingsCache(), loadSettings()
 
 ### Community 12 - "Community 12"
-Cohesion: 0.5
-Nodes (0): 
+Cohesion: 0.29
+Nodes (6): createZone(), deleteZone(), updateZone(), validateZone(), handleDelete(), handleSaveZone()
 
 ### Community 13 - "Community 13"
 Cohesion: 0.5
 Nodes (0): 
 
 ### Community 14 - "Community 14"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 15 - "Community 15"
 Cohesion: 1.0
 Nodes (2): require(), singleRequire()
 
-### Community 15 - "Community 15"
-Cohesion: 0.67
-Nodes (0): 
-
 ### Community 16 - "Community 16"
-Cohesion: 1.0
+Cohesion: 0.67
 Nodes (0): 
 
 ### Community 17 - "Community 17"
@@ -228,13 +228,11 @@ Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **Thin community `Community 16`** (2 nodes): `App()`, `App.tsx`
+- **Thin community `Community 17`** (2 nodes): `App()`, `App.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 17`** (2 nodes): `Login.tsx`, `handleSubmit()`
+- **Thin community `Community 18`** (2 nodes): `Login.tsx`, `handleSubmit()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 18`** (2 nodes): `Dashboard.tsx`, `timeAgo()`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 19`** (2 nodes): `SettingsPage.tsx`, `SettingsPage()`
+- **Thin community `Community 19`** (2 nodes): `Dashboard.tsx`, `timeAgo()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 20`** (2 nodes): `GeofenceMap.tsx`, `GeofenceMap()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -276,17 +274,17 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `update()` connect `Community 4` to `Community 5`, `Community 7`, `Community 8`, `Community 10`, `Community 11`?**
-  _High betweenness centrality (0.152) - this node is a cross-community bridge._
-- **Why does `set()` connect `Community 3` to `Community 10`, `Community 2`, `Community 6`?**
-  _High betweenness centrality (0.130) - this node is a cross-community bridge._
-- **Why does `deleteFromCloudinary()` connect `Community 4` to `Community 1`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
-- **Are the 7 inferred relationships involving `update()` (e.g. with `updateAttachmentVerification()` and `incrementLampiranCount()`) actually correct?**
-  _`update()` has 7 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `update()` connect `Community 2` to `Community 4`, `Community 7`, `Community 8`, `Community 11`, `Community 12`?**
+  _High betweenness centrality (0.168) - this node is a cross-community bridge._
+- **Why does `set()` connect `Community 3` to `Community 9`, `Community 12`, `Community 6`?**
+  _High betweenness centrality (0.148) - this node is a cross-community bridge._
+- **Why does `getMonthlyReport()` connect `Community 9` to `Community 3`, `Community 5`?**
+  _High betweenness centrality (0.104) - this node is a cross-community bridge._
+- **Are the 8 inferred relationships involving `update()` (e.g. with `updateAttachmentVerification()` and `incrementLampiranCount()`) actually correct?**
+  _`update()` has 8 INFERRED edges - model-reasoned connections that need verification._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.12 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**
   _Cohesion score 0.12 - nodes in this community are weakly interconnected._

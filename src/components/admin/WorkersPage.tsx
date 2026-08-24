@@ -521,7 +521,7 @@ function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin }: { worker: U
         { label: 'Absensi Online', value: worker.absensi_online ? '✓ Aktif' : '✗ Nonaktif' },
         { label: 'Gender', value: worker.gender === 'pria' ? '♂ Pria' : '♀ Wanita' },
         { label: 'No HP', value: worker.no_hp },
-        { label: 'Kehadiran Bulan Ini', value: '20/22 hari (90.9%)' },
+        { label: 'Kehadiran Bulan Ini', value: '—' },
       ].map(({ label, value }) => (
         <div key={label}>
           <p className="text-xs text-gray-400">{label}</p>

@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase';
 import type { Attendance, AttendanceStatus, HistoryRecord, ServiceResult } from '../types';
+import { wibDateOf, wibDayRange, wibToday } from '../utils/wib';
 
 export interface CheckInPayload {
   workerId: string;
@@ -33,10 +34,11 @@ export async function submitCheckIn(
 
   let status: AttendanceStatus = 'hadir';
   if (shift) {
-    const date = payload.timestamp.split('T')[0];
+    // FIXPLAN U1: tanggal jadwal dihitung di kalender WIB (bukan UTC)
+    const date = wibDateOf(payload.timestamp);
     const [sh, sm] = shift.jam_mulai.split(':').map(Number);
     const checkin = new Date(payload.timestamp);
-    const scheduled = new Date(`${date}T${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}:00`);
+    const scheduled = new Date(`${date}T${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}:00+07:00`);
     const diffMin = (checkin.getTime() - scheduled.getTime()) / 60000;
     if (diffMin > shift.toleransi_menit) status = 'terlambat';
   }
@@ -95,14 +97,15 @@ export async function getTodayAttendance(workerId: string): Promise<ServiceResul
   timestamp: string;
   checkOutAt: string | null;
 } | null>> {
-  const today = new Date().toISOString().split('T')[0];
+  // FIXPLAN U1: boundary "hari ini" memakai kalender WIB
+  const { start, end } = wibDayRange(wibToday());
 
   const { data, error } = await supabase
     .from('attendances')
     .select('id, checkin_at, checkout_at')
     .eq('user_id', workerId)
-    .gte('checkin_at', `${today}T00:00:00`)
-    .lte('checkin_at', `${today}T23:59:59`)
+    .gte('checkin_at', start)
+    .lt('checkin_at', end)
     .order('checkin_at', { ascending: false })
     .limit(1)
     .single();
@@ -123,6 +126,20 @@ export async function getTodayAttendance(workerId: string): Promise<ServiceResul
       checkOutAt: data.checkout_at,
     },
   };
+}
+
+/** FIXPLAN T1 — override status oleh admin (audit diisi trigger DB). */
+export async function updateAttendanceStatus(
+  id: string,
+  status: AttendanceStatus,
+  catatan?: string,
+): Promise<ServiceResult<void>> {
+  const { error } = await supabase
+    .from('attendances')
+    .update({ status, ...(catatan !== undefined ? { catatan } : {}) })
+    .eq('id', id);
+  if (error) return { success: false, error: error.message, code: error.code };
+  return { success: true, data: undefined };
 }
 
 function getStatusLabel(status: AttendanceStatus): string {

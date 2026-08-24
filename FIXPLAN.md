@@ -374,10 +374,17 @@ Semua perintah CLI (delete ×3, db push 011+012, deploy admin-user & cloudinary-
 > **Catatan insiden probe:** POST probe ke `seed-auth` yang tidak ter-gate TER-EKSEKUSI di live (200) — akun auth Budi/Admin terhapus-dan-dibuat-ulang dengan PIN default saat itu. UUID fixed sehingga row public.users tetap cocok, tapi konfirmasi login kedua akun setelah deploy.
 
 **Fase F1**
-- [ ] T1 override persist · [ ] T2 filter tanggal · [ ] T3 laporan periode · [ ] T4 export CSV (+D4) · [ ] T5 angka palsu hilang · [ ] T6 offline (D1) · [ ] T7 settings hidup · [ ] T8 guard absensi_online & hari_kerja
+- [x] T1 override persist · [x] T2 filter tanggal · [x] T3 laporan periode · [x] T4 export CSV (+D4) · [x] T5 angka palsu hilang · [x] T6 offline (D1=A) · [x] T7 settings hidup · [x] T8 guard absensi_online & hari_kerja
+  - detail implementasi per task: lihat catatan commit F1; verifikasi runtime menyusul setelah `db push` migrasi 013
 
 **Fase F2**
-- [ ] U1 util WIB + semua titik UTC diganti (test wib.ts dibuat BERSAMAAN, bukan menunggu X5) · [ ] U2 lampiran (D2) · [ ] U3 delete attachment · [ ] U4 RPC atomic · [ ] U5 sync metadata + profil fresh · [ ] U6 error login (+D8) · [ ] U7 query hemat · [ ] U8 feed jujur · [ ] U9 validasi waktu (D9) · [ ] audit trail override (D10)
+- [x] U1 util WIB (`src/utils/wib.ts`) + titik UTC diganti: `getTodayAttendance`, kalkulasi terlambat `submitCheckIn`, mingguan reports, AttendancePage, Dashboard. Unit test ditunda ke D5 (vitest belum diinstal)
+- [x] U2 lampiran (D2 = Opsi A) — upload diblokir sampai check-in sukses; juga saat check-in masih di antrean offline
+- [x] U3 delete attachment — policy `attachments_delete_own` (migrasi 013) + `removeAttachment` → `deleteAttachment()`; ceiling: aset Cloudinary dibiarkan (butuh secret), bersihkan berkala via admin
+- [x] U4 RPC atomic — `increment_lampiran_count(uuid)` SECURITY DEFINER (migrasi 013); wiring service menyusul setelah push
+- [x] U9 validasi waktu (D9 = toleransi pragmatis) — trigger tolak masa depan >5 mnt & masa lalu >25 jam (cukup utk antrean semalam)
+- [x] audit trail override (D10 = kolom minimal) — `overridden_by/overridden_at` + trigger, migrasi 013
+- [ ] U5 sync metadata + profil fresh · [ ] U6 error login (+D8) · [ ] U7 query hemat · [ ] U8 feed jujur
 
 **Fase F3**
 - [ ] X1 dead code · [ ] X2 leaflet · [ ] X3 docs+graph · [ ] X4 build+bundle · [ ] X5 test (D5) · [ ] X6 CI

@@ -8,7 +8,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "graph:update": "graphify update .",
-    "graph:query": "graphify query"
+    "graph:query": "graphify query",
+    "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "npm run lint:fix"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
@@ -24,11 +30,19 @@
     "tailwind-merge": "3.4.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@tailwindcss/vite": "4.1.17",
     "@types/node": "22.19.17",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "@vitejs/plugin-react": "5.1.1",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
     "tailwindcss": "4.1.17",
     "typescript": "5.9.3",
     "vite": "7.3.2",
