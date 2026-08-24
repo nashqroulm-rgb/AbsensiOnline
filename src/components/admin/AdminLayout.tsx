@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Clock, MapPin, Calendar, FileBarChart, Menu, X, MapPinned, LogOut, ChevronDown, Bell, Smartphone, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Clock, MapPin, Calendar, FileBarChart, Menu, X, MapPinned, LogOut, ChevronDown, Smartphone, Settings } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 
@@ -19,7 +19,6 @@ export default function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const notifCount = 0;
 
   const activeLabel = navItems.find((n) => location.pathname.startsWith(n.path))?.label ?? 'Admin';
 
@@ -109,14 +108,6 @@ export default function AdminLayout() {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 rounded-lg text-xs font-medium transition-colors"
             >
               <Smartphone size={13} /> PWA View
-            </button>
-            <button className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
-              <Bell size={18} />
-              {notifCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                  {notifCount}
-                </span>
-              )}
             </button>
             <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
               <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">

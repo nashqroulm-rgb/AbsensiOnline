@@ -88,7 +88,11 @@ export async function createWorker(
     .from('users')
     .insert({ ...worker, id: authUserId })
     .select();
-  if (error) return { success: false, error: error.message, code: error.code };
+  if (error) {
+    // FIXPLAN audit: jangan tinggalkan akun auth yatim bila insert profil gagal
+    await callAdminUser('delete', { userId: authUserId });
+    return { success: false, error: error.message, code: error.code };
+  }
   return { success: true, data: (data?.[0] as User) || ({ ...worker, id: authUserId } as User) };
 }
 

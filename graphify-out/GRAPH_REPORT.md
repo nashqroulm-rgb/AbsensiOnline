@@ -1,12 +1,12 @@
 # Graph Report - C:\Users\K4G3\Documents\Github\AbsensiOnline  (2026-08-24)
 
 ## Corpus Check
-- 49 files · ~54,942 words
+- 49 files · ~55,353 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 282 nodes · 418 edges · 37 communities detected
-- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 68 edges (avg confidence: 0.8)
+- 286 nodes · 428 edges · 37 communities detected
+- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 69 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -55,10 +55,10 @@
 4. `update()` - 9 edges
 5. `normalizeHandler()` - 7 edges
 6. `getFriendlyURL()` - 7 edges
-7. `set()` - 7 edges
-8. `Strategy` - 6 edges
-9. `PrecacheStrategy` - 6 edges
-10. `loadData()` - 6 edges
+7. `loadData()` - 7 edges
+8. `set()` - 7 edges
+9. `flushQueue()` - 7 edges
+10. `Strategy` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `loadData()` --calls--> `getMonthlyReport()`  [INFERRED]
@@ -79,7 +79,7 @@ Cohesion: 0.07
 Nodes (25): addRoute(), cacheMatchIgnoreParams(), cacheWillUpdate(), canConstructResponseFromBodyStream(), copyResponse(), createHandlerBoundToURL(), Deferred, executeQuotaErrorCallbacks() (+17 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.17
+Cohesion: 0.19
 Nodes (5): getFriendlyURL(), PrecacheStrategy, Strategy, StrategyHandler, toRequest()
 
 ### Community 2 - "Community 2"
@@ -91,20 +91,20 @@ Cohesion: 0.12
 Nodes (6): createCacheKey(), isInstance(), PrecacheController, RegExpRoute, waitUntil(), set()
 
 ### Community 4 - "Community 4"
-Cohesion: 0.18
-Nodes (13): submitCheckIn(), submitCheckOut(), blockCheckIn(), formatTime(), handleCheckin(), handleCheckout(), queueCheckIn(), requestGPS() (+5 more)
+Cohesion: 0.17
+Nodes (15): submitCheckIn(), submitCheckOut(), blockCheckIn(), formatTime(), handleCheckin(), handleCheckout(), queueCheckIn(), requestGPS() (+7 more)
 
 ### Community 5 - "Community 5"
+Cohesion: 0.15
+Nodes (7): getOrCreateDefaultRouter(), hasMethod(), isOneOf(), isType(), normalizeHandler(), Route, Router
+
+### Community 6 - "Community 6"
 Cohesion: 0.13
 Nodes (11): getAttendances(), getHistory(), load(), downloadCsv(), load(), load(), exportRekap(), loadData() (+3 more)
 
-### Community 6 - "Community 6"
-Cohesion: 0.16
-Nodes (7): getOrCreateDefaultRouter(), hasMethod(), isOneOf(), isType(), normalizeHandler(), Route, Router
-
 ### Community 7 - "Community 7"
-Cohesion: 0.24
-Nodes (12): callAdminUser(), createWorker(), deleteWorker(), getWorkers(), resetWorkerPin(), updateWorker(), validatePin(), validateWorker() (+4 more)
+Cohesion: 0.22
+Nodes (13): callAdminUser(), createWorker(), deleteWorker(), getWorkers(), resetWorkerPin(), updateWorker(), validatePin(), validateWorker() (+5 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.23
@@ -268,11 +268,11 @@ Nodes (0):
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `update()` connect `Community 2` to `Community 4`, `Community 7`, `Community 8`, `Community 11`, `Community 12`?**
-  _High betweenness centrality (0.197) - this node is a cross-community bridge._
+  _High betweenness centrality (0.202) - this node is a cross-community bridge._
 - **Why does `callAdminUser()` connect `Community 7` to `Community 1`?**
-  _High betweenness centrality (0.159) - this node is a cross-community bridge._
+  _High betweenness centrality (0.164) - this node is a cross-community bridge._
 - **Why does `updateWorker()` connect `Community 7` to `Community 2`?**
-  _High betweenness centrality (0.129) - this node is a cross-community bridge._
+  _High betweenness centrality (0.140) - this node is a cross-community bridge._
 - **Are the 8 inferred relationships involving `update()` (e.g. with `updateAttachmentVerification()` and `incrementLampiranCount()`) actually correct?**
   _`update()` has 8 INFERRED edges - model-reasoned connections that need verification._
 - **Should `Community 0` be split into smaller, more focused modules?**

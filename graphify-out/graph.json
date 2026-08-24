@@ -117,7 +117,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L421",
       "id": "workbox_7e5eb42b_hasmethod",
-      "community": 6,
+      "community": 5,
       "norm_label": "hasmethod()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L428",
       "id": "workbox_7e5eb42b_istype",
-      "community": 6,
+      "community": 5,
       "norm_label": "istype()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L443",
       "id": "workbox_7e5eb42b_isoneof",
-      "community": 6,
+      "community": 5,
       "norm_label": "isoneof()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L517",
       "id": "workbox_7e5eb42b_normalizehandler",
-      "community": 6,
+      "community": 5,
       "norm_label": "normalizehandler()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L559",
       "id": "workbox_7e5eb42b_route",
-      "community": 6,
+      "community": 5,
       "norm_label": "route"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L571",
       "id": "workbox_7e5eb42b_route_constructor",
-      "community": 6,
+      "community": 5,
       "norm_label": ".constructor()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L596",
       "id": "workbox_7e5eb42b_route_setcatchhandler",
-      "community": 6,
+      "community": 5,
       "norm_label": ".setcatchhandler()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L708",
       "id": "workbox_7e5eb42b_router",
-      "community": 6,
+      "community": 5,
       "norm_label": "router"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L712",
       "id": "workbox_7e5eb42b_router_constructor",
-      "community": 6,
+      "community": 5,
       "norm_label": ".constructor()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L721",
       "id": "workbox_7e5eb42b_router_routes",
-      "community": 6,
+      "community": 5,
       "norm_label": ".routes()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L728",
       "id": "workbox_7e5eb42b_router_addfetchlistener",
-      "community": 6,
+      "community": 5,
       "norm_label": ".addfetchlistener()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L765",
       "id": "workbox_7e5eb42b_router_addcachelistener",
-      "community": 6,
+      "community": 5,
       "norm_label": ".addcachelistener()"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L811",
       "id": "workbox_7e5eb42b_router_handlerequest",
-      "community": 1,
+      "community": 5,
       "norm_label": ".handlerequest()"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L955",
       "id": "workbox_7e5eb42b_router_findmatchingroute",
-      "community": 1,
+      "community": 5,
       "norm_label": ".findmatchingroute()"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L1021",
       "id": "workbox_7e5eb42b_router_setdefaulthandler",
-      "community": 6,
+      "community": 5,
       "norm_label": ".setdefaulthandler()"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L1031",
       "id": "workbox_7e5eb42b_router_setcatchhandler",
-      "community": 6,
+      "community": 5,
       "norm_label": ".setcatchhandler()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L1039",
       "id": "workbox_7e5eb42b_router_registerroute",
-      "community": 6,
+      "community": 5,
       "norm_label": ".registerroute()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L1084",
       "id": "workbox_7e5eb42b_router_unregisterroute",
-      "community": 6,
+      "community": 5,
       "norm_label": ".unregisterroute()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\dev-dist\\workbox-7e5eb42b.js",
       "source_location": "L1114",
       "id": "workbox_7e5eb42b_getorcreatedefaultrouter",
-      "community": 6,
+      "community": 5,
       "norm_label": "getorcreatedefaultrouter()"
     },
     {
@@ -1197,7 +1197,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\AttendancePage.tsx",
       "source_location": "L60",
       "id": "attendancepage_load",
-      "community": 5,
+      "community": 6,
       "norm_label": "load()"
     },
     {
@@ -1260,43 +1260,43 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
       "source_location": "L1",
       "id": "c_users_k4g3_documents_github_absensionline_src_components_admin_reportspage_tsx",
-      "community": 5,
+      "community": 6,
       "norm_label": "reportspage.tsx"
     },
     {
       "label": "loadData()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L20",
+      "source_location": "L18",
       "id": "reportspage_loaddata",
-      "community": 5,
+      "community": 6,
       "norm_label": "loaddata()"
     },
     {
       "label": "exportRekap()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L44",
+      "source_location": "L41",
       "id": "reportspage_exportrekap",
-      "community": 5,
+      "community": 6,
       "norm_label": "exportrekap()"
     },
     {
       "label": "zonaNameSplit()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L72",
+      "source_location": "L69",
       "id": "reportspage_zonanamesplit",
-      "community": 5,
+      "community": 6,
       "norm_label": "zonanamesplit()"
     },
     {
       "label": "getKinerjaBadge()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L81",
+      "source_location": "L78",
       "id": "reportspage_getkinerjabadge",
-      "community": 5,
+      "community": 6,
       "norm_label": "getkinerjabadge()"
     },
     {
@@ -1393,7 +1393,7 @@
       "label": "set()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L64",
+      "source_location": "L66",
       "id": "workerspage_set",
       "community": 7,
       "norm_label": "set()"
@@ -1402,7 +1402,7 @@
       "label": "loadData()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L178",
+      "source_location": "L180",
       "id": "workerspage_loaddata",
       "community": 7,
       "norm_label": "loaddata()"
@@ -1411,7 +1411,7 @@
       "label": "handleSaveWorker()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L195",
+      "source_location": "L197",
       "id": "workerspage_handlesaveworker",
       "community": 7,
       "norm_label": "handlesaveworker()"
@@ -1420,16 +1420,34 @@
       "label": "confirmDelete()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L235",
+      "source_location": "L237",
       "id": "workerspage_confirmdelete",
       "community": 7,
       "norm_label": "confirmdelete()"
     },
     {
+      "label": "confirmToggleStatus()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
+      "source_location": "L244",
+      "id": "workerspage_confirmtogglestatus",
+      "community": 7,
+      "norm_label": "confirmtogglestatus()"
+    },
+    {
+      "label": "handleToggleStatus()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
+      "source_location": "L245",
+      "id": "workerspage_handletogglestatus",
+      "community": 7,
+      "norm_label": "handletogglestatus()"
+    },
+    {
       "label": "handleResetPin()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L240",
+      "source_location": "L255",
       "id": "workerspage_handleresetpin",
       "community": 7,
       "norm_label": "handleresetpin()"
@@ -1438,7 +1456,7 @@
       "label": "handleDeleteWorker()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L250",
+      "source_location": "L265",
       "id": "workerspage_handledeleteworker",
       "community": 7,
       "norm_label": "handledeleteworker()"
@@ -1566,7 +1584,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\pwa\\HomeTab.tsx",
       "source_location": "L39",
       "id": "hometab_load",
-      "community": 5,
+      "community": 6,
       "norm_label": "load()"
     },
     {
@@ -1692,7 +1710,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\pwa\\ProfileTab.tsx",
       "source_location": "L1",
       "id": "c_users_k4g3_documents_github_absensionline_src_components_pwa_profiletab_tsx",
-      "community": 5,
+      "community": 6,
       "norm_label": "profiletab.tsx"
     },
     {
@@ -1701,7 +1719,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\pwa\\ProfileTab.tsx",
       "source_location": "L26",
       "id": "profiletab_load",
-      "community": 5,
+      "community": 6,
       "norm_label": "load()"
     },
     {
@@ -1989,7 +2007,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
       "source_location": "L1",
       "id": "c_users_k4g3_documents_github_absensionline_src_services_attendance_service_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "attendance.service.ts"
     },
     {
@@ -1998,7 +2016,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
       "source_location": "L15",
       "id": "attendance_service_getattendances",
-      "community": 5,
+      "community": 6,
       "norm_label": "getattendances()"
     },
     {
@@ -2023,7 +2041,7 @@
       "label": "getTodayAttendance()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L95",
+      "source_location": "L96",
       "id": "attendance_service_gettodayattendance",
       "community": 9,
       "norm_label": "gettodayattendance()"
@@ -2032,7 +2050,7 @@
       "label": "updateAttendanceStatus()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L132",
+      "source_location": "L133",
       "id": "attendance_service_updateattendancestatus",
       "community": 2,
       "norm_label": "updateattendancestatus()"
@@ -2041,27 +2059,27 @@
       "label": "getStatusLabel()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L145",
+      "source_location": "L146",
       "id": "attendance_service_getstatuslabel",
-      "community": 5,
+      "community": 6,
       "norm_label": "getstatuslabel()"
     },
     {
       "label": "getStatusColor()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L153",
+      "source_location": "L154",
       "id": "attendance_service_getstatuscolor",
-      "community": 5,
+      "community": 6,
       "norm_label": "getstatuscolor()"
     },
     {
       "label": "getHistory()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L163",
+      "source_location": "L164",
       "id": "attendance_service_gethistory",
-      "community": 5,
+      "community": 6,
       "norm_label": "gethistory()"
     },
     {
@@ -2151,7 +2169,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\shifts.service.ts",
       "source_location": "L4",
       "id": "shifts_service_getshifts",
-      "community": 5,
+      "community": 6,
       "norm_label": "getshifts()"
     },
     {
@@ -2232,7 +2250,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
       "source_location": "L30",
       "id": "workers_service_getworkerbyid",
-      "community": 5,
+      "community": 6,
       "norm_label": "getworkerbyid()"
     },
     {
@@ -2266,7 +2284,7 @@
       "label": "updateWorker()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L95",
+      "source_location": "L99",
       "id": "workers_service_updateworker",
       "community": 7,
       "norm_label": "updateworker()"
@@ -2275,7 +2293,7 @@
       "label": "deleteWorker()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L126",
+      "source_location": "L130",
       "id": "workers_service_deleteworker",
       "community": 7,
       "norm_label": "deleteworker()"
@@ -2284,7 +2302,7 @@
       "label": "resetWorkerPin()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L138",
+      "source_location": "L142",
       "id": "workers_service_resetworkerpin",
       "community": 7,
       "norm_label": "resetworkerpin()"
@@ -2304,7 +2322,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\zones.service.ts",
       "source_location": "L4",
       "id": "zones_service_getzones",
-      "community": 5,
+      "community": 6,
       "norm_label": "getzones()"
     },
     {
@@ -2403,7 +2421,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\exportCsv.ts",
       "source_location": "L1",
       "id": "c_users_k4g3_documents_github_absensionline_src_utils_exportcsv_ts",
-      "community": 5,
+      "community": 6,
       "norm_label": "exportcsv.ts"
     },
     {
@@ -2412,7 +2430,7 @@
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\exportCsv.ts",
       "source_location": "L4",
       "id": "exportcsv_downloadcsv",
-      "community": 5,
+      "community": 6,
       "norm_label": "downloadcsv()"
     },
     {
@@ -2428,16 +2446,25 @@
       "label": "getPendingQueue()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L13",
+      "source_location": "L16",
       "id": "offlinequeue_getpendingqueue",
       "community": 4,
       "norm_label": "getpendingqueue()"
     },
     {
+      "label": "saveQueue()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L25",
+      "id": "offlinequeue_savequeue",
+      "community": 4,
+      "norm_label": "savequeue()"
+    },
+    {
       "label": "addToQueue()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L22",
+      "source_location": "L29",
       "id": "offlinequeue_addtoqueue",
       "community": 4,
       "norm_label": "addtoqueue()"
@@ -2446,16 +2473,25 @@
       "label": "markSynced()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L28",
+      "source_location": "L35",
       "id": "offlinequeue_marksynced",
       "community": 4,
       "norm_label": "marksynced()"
     },
     {
+      "label": "isPermanentError()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L44",
+      "id": "offlinequeue_ispermanenterror",
+      "community": 4,
+      "norm_label": "ispermanenterror()"
+    },
+    {
       "label": "flushQueue()",
       "file_type": "code",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L35",
+      "source_location": "L57",
       "id": "offlinequeue_flushqueue",
       "community": 4,
       "norm_label": "flushqueue()"
@@ -5283,7 +5319,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L20",
+      "source_location": "L18",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_reportspage_tsx",
       "_tgt": "reportspage_loaddata",
@@ -5295,7 +5331,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L44",
+      "source_location": "L41",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_reportspage_tsx",
       "_tgt": "reportspage_exportrekap",
@@ -5307,7 +5343,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L72",
+      "source_location": "L69",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_reportspage_tsx",
       "_tgt": "reportspage_zonanamesplit",
@@ -5319,7 +5355,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L81",
+      "source_location": "L78",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_reportspage_tsx",
       "_tgt": "reportspage_getkinerjabadge",
@@ -5344,24 +5380,24 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
-      "source_location": "L29",
-      "weight": 1.0,
-      "_src": "reportspage_loaddata",
-      "_tgt": "attendance_service_getattendances",
-      "source": "reportspage_loaddata",
-      "target": "attendance_service_getattendances"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
       "source_location": "L30",
       "weight": 1.0,
       "_src": "reportspage_loaddata",
       "_tgt": "zones_service_getzones",
       "source": "reportspage_loaddata",
       "target": "zones_service_getzones"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\ReportsPage.tsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_src": "reportspage_loaddata",
+      "_tgt": "attendance_service_getattendances",
+      "source": "reportspage_loaddata",
+      "target": "attendance_service_getattendances"
     },
     {
       "relation": "calls",
@@ -5523,7 +5559,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L64",
+      "source_location": "L66",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
       "_tgt": "workerspage_set",
@@ -5535,7 +5571,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L178",
+      "source_location": "L180",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
       "_tgt": "workerspage_loaddata",
@@ -5547,7 +5583,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L195",
+      "source_location": "L197",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
       "_tgt": "workerspage_handlesaveworker",
@@ -5559,7 +5595,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L235",
+      "source_location": "L237",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
       "_tgt": "workerspage_confirmdelete",
@@ -5571,7 +5607,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L240",
+      "source_location": "L244",
+      "weight": 1.0,
+      "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
+      "_tgt": "workerspage_confirmtogglestatus",
+      "source": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
+      "target": "workerspage_confirmtogglestatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
+      "source_location": "L245",
+      "weight": 1.0,
+      "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
+      "_tgt": "workerspage_handletogglestatus",
+      "source": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
+      "target": "workerspage_handletogglestatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
+      "source_location": "L255",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
       "_tgt": "workerspage_handleresetpin",
@@ -5583,7 +5643,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L250",
+      "source_location": "L265",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_components_admin_workerspage_tsx",
       "_tgt": "workerspage_handledeleteworker",
@@ -5595,7 +5655,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L232",
+      "source_location": "L234",
       "weight": 1.0,
       "_src": "workerspage_handlesaveworker",
       "_tgt": "workerspage_loaddata",
@@ -5607,7 +5667,19 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
-      "source_location": "L256",
+      "source_location": "L252",
+      "weight": 1.0,
+      "_src": "workerspage_handletogglestatus",
+      "_tgt": "workerspage_loaddata",
+      "source": "workerspage_loaddata",
+      "target": "workerspage_handletogglestatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
+      "source_location": "L271",
       "weight": 1.0,
       "_src": "workerspage_handledeleteworker",
       "_tgt": "workerspage_loaddata",
@@ -5674,6 +5746,18 @@
       "_tgt": "workers_service_createworker",
       "source": "workerspage_handlesaveworker",
       "target": "workers_service_createworker"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\components\\admin\\WorkersPage.tsx",
+      "source_location": "L248",
+      "weight": 1.0,
+      "_src": "workerspage_handletogglestatus",
+      "_tgt": "workers_service_updateworker",
+      "source": "workerspage_handletogglestatus",
+      "target": "workers_service_updateworker"
     },
     {
       "relation": "calls",
@@ -6711,7 +6795,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L95",
+      "source_location": "L96",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_attendance_service_ts",
       "_tgt": "attendance_service_gettodayattendance",
@@ -6723,7 +6807,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L132",
+      "source_location": "L133",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_attendance_service_ts",
       "_tgt": "attendance_service_updateattendancestatus",
@@ -6735,7 +6819,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L145",
+      "source_location": "L146",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_attendance_service_ts",
       "_tgt": "attendance_service_getstatuslabel",
@@ -6747,7 +6831,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L153",
+      "source_location": "L154",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_attendance_service_ts",
       "_tgt": "attendance_service_getstatuscolor",
@@ -6759,7 +6843,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\attendance.service.ts",
-      "source_location": "L163",
+      "source_location": "L164",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_attendance_service_ts",
       "_tgt": "attendance_service_gethistory",
@@ -7095,7 +7179,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L95",
+      "source_location": "L99",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_workers_service_ts",
       "_tgt": "workers_service_updateworker",
@@ -7107,7 +7191,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L126",
+      "source_location": "L130",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_workers_service_ts",
       "_tgt": "workers_service_deleteworker",
@@ -7119,7 +7203,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L138",
+      "source_location": "L142",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_services_workers_service_ts",
       "_tgt": "workers_service_resetworkerpin",
@@ -7143,7 +7227,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L120",
+      "source_location": "L124",
       "weight": 1.0,
       "_src": "workers_service_updateworker",
       "_tgt": "workers_service_calladminuser",
@@ -7155,7 +7239,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L127",
+      "source_location": "L131",
       "weight": 1.0,
       "_src": "workers_service_deleteworker",
       "_tgt": "workers_service_calladminuser",
@@ -7167,7 +7251,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L142",
+      "source_location": "L146",
       "weight": 1.0,
       "_src": "workers_service_resetworkerpin",
       "_tgt": "workers_service_calladminuser",
@@ -7191,7 +7275,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L96",
+      "source_location": "L100",
       "weight": 1.0,
       "_src": "workers_service_updateworker",
       "_tgt": "workers_service_validateworker",
@@ -7215,7 +7299,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\services\\workers.service.ts",
-      "source_location": "L139",
+      "source_location": "L143",
       "weight": 1.0,
       "_src": "workers_service_resetworkerpin",
       "_tgt": "workers_service_validatepin",
@@ -7359,7 +7443,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L13",
+      "source_location": "L16",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
       "_tgt": "offlinequeue_getpendingqueue",
@@ -7371,7 +7455,19 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L22",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
+      "_tgt": "offlinequeue_savequeue",
+      "source": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
+      "target": "offlinequeue_savequeue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L29",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
       "_tgt": "offlinequeue_addtoqueue",
@@ -7383,7 +7479,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L28",
+      "source_location": "L35",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
       "_tgt": "offlinequeue_marksynced",
@@ -7395,7 +7491,19 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L35",
+      "source_location": "L44",
+      "weight": 1.0,
+      "_src": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
+      "_tgt": "offlinequeue_ispermanenterror",
+      "source": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
+      "target": "offlinequeue_ispermanenterror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L57",
       "weight": 1.0,
       "_src": "c_users_k4g3_documents_github_absensionline_src_utils_offlinequeue_ts",
       "_tgt": "offlinequeue_flushqueue",
@@ -7407,7 +7515,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L23",
+      "source_location": "L30",
       "weight": 1.0,
       "_src": "offlinequeue_addtoqueue",
       "_tgt": "offlinequeue_getpendingqueue",
@@ -7419,7 +7527,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L29",
+      "source_location": "L37",
       "weight": 1.0,
       "_src": "offlinequeue_marksynced",
       "_tgt": "offlinequeue_getpendingqueue",
@@ -7431,7 +7539,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L36",
+      "source_location": "L58",
       "weight": 1.0,
       "_src": "offlinequeue_flushqueue",
       "_tgt": "offlinequeue_getpendingqueue",
@@ -7443,11 +7551,59 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
-      "source_location": "L44",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_src": "offlinequeue_addtoqueue",
+      "_tgt": "offlinequeue_savequeue",
+      "source": "offlinequeue_savequeue",
+      "target": "offlinequeue_addtoqueue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L36",
+      "weight": 1.0,
+      "_src": "offlinequeue_marksynced",
+      "_tgt": "offlinequeue_savequeue",
+      "source": "offlinequeue_savequeue",
+      "target": "offlinequeue_marksynced",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L85",
+      "weight": 1.0,
+      "_src": "offlinequeue_flushqueue",
+      "_tgt": "offlinequeue_savequeue",
+      "source": "offlinequeue_savequeue",
+      "target": "offlinequeue_flushqueue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L71",
       "weight": 1.0,
       "_src": "offlinequeue_flushqueue",
       "_tgt": "offlinequeue_marksynced",
       "source": "offlinequeue_marksynced",
+      "target": "offlinequeue_flushqueue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\K4G3\\Documents\\Github\\AbsensiOnline\\src\\utils\\offlineQueue.ts",
+      "source_location": "L75",
+      "weight": 1.0,
+      "_src": "offlinequeue_flushqueue",
+      "_tgt": "offlinequeue_ispermanenterror",
+      "source": "offlinequeue_ispermanenterror",
       "target": "offlinequeue_flushqueue",
       "confidence_score": 1.0
     },

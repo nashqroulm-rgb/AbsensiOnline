@@ -72,6 +72,7 @@ export async function submitCheckOut(
     .single();
 
   if (fetchError || !existing) return { success: false, error: 'Data check-in tidak ditemukan.' };
+  if (!existing.checkin_at) return { success: false, error: 'Waktu check-in tidak valid.' };
 
   const durasi_menit = Math.round(
     (new Date(payload.timestamp).getTime() - new Date(existing.checkin_at!).getTime()) / 60000,

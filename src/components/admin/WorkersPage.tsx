@@ -2,12 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Download, ChevronLeft, ChevronRight, Edit2, Trash2, Eye, UserX, Key } from 'lucide-react';
 import type { User, Zone, Shift } from '../../types';
 import { getWorkers, createWorker, updateWorker, deleteWorker, resetWorkerPin } from '../../services/workers.service';
+import { downloadCsv } from '../../utils/exportCsv';
 import { getZones } from '../../services/zones.service';
 import { getShifts } from '../../services/shifts.service';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
 import Toggle from '../ui/Toggle';
 import Modal from '../ui/Modal';
+import ConfirmDialog from '../ui/ConfirmDialog';
 import { useToast } from '../ui/Toast';
 
 const PAGE_SIZE = 8;
@@ -237,6 +239,19 @@ export default function WorkersPage() {
     setShowDeleteConfirm(true);
   };
 
+  // FIXPLAN audit: tombol Nonaktifkan/Aktifkan kini berfungsi
+  const [toggleTarget, setToggleTarget] = useState<User | null>(null);
+  const confirmToggleStatus = (worker: User) => setToggleTarget(worker);
+  const handleToggleStatus = async () => {
+    if (!toggleTarget) return;
+    const newStatus = toggleTarget.status === 'aktif' ? 'nonaktif' : 'aktif';
+    const res = await updateWorker(toggleTarget.id, { status: newStatus });
+    if (!res.success) { toast(res.error, 'error'); return; }
+    toast(`${toggleTarget.nama} ${newStatus === 'aktif' ? 'diaktifkan' : 'dinonaktifkan'}.`, 'success');
+    setToggleTarget(null);
+    loadData();
+  };
+
   const handleResetPin = async () => {
     if (!resetTarget) return;
     const res = await resetWorkerPin(resetTarget.id, resetPin);
@@ -324,7 +339,24 @@ export default function WorkersPage() {
             <option value="aktif">Aktif</option>
             <option value="nonaktif">Nonaktif</option>
           </select>
-          <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
+          <button
+            onClick={() => downloadCsv(
+              `pekerja-${new Date().toISOString().slice(0, 10)}.csv`,
+              ['Nama', 'No HP', 'Jabatan', 'Zona', 'Shift', 'Tipe', 'Gender', 'Status'],
+              filtered.map(w => [
+                w.nama,
+                w.no_hp,
+                w.jabatan,
+                zones.find(z => z.id === w.zona_id)?.nama || '',
+                shifts.find(s => s.id === w.shift_id)?.nama || '',
+                tipeMap[w.tipe] || w.tipe,
+                w.gender,
+                w.status,
+              ]),
+            )}
+            disabled={filtered.length === 0}
+            className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+          >
             <Download size={15} /> Export
           </button>
           <button onClick={() => { setEditUser(null); setShowForm(true); }}
@@ -386,7 +418,7 @@ export default function WorkersPage() {
                             className="p-1.5 hover:bg-amber-50 rounded-lg text-gray-400 hover:text-amber-600 transition-colors">
                             <Edit2 size={14} />
                           </button>
-                          <button title="Nonaktifkan" className="p-1.5 hover:bg-gray-50 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
+                          <button onClick={() => confirmToggleStatus(worker)} title={worker.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'} className="p-1.5 hover:bg-gray-50 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
                             <UserX size={14} />
                           </button>
                           <button onClick={() => { setResetTarget(worker); setResetPin(''); setShowResetPin(true); }} title="Reset PIN" className="p-1.5 hover:bg-purple-50 rounded-lg text-gray-400 hover:text-purple-600 transition-colors">
@@ -401,7 +433,7 @@ export default function WorkersPage() {
                     {isExpanded && (
                       <tr key={`${worker.id}-detail`}>
                         <td colSpan={8} className="px-4 pb-4 pt-2 bg-green-50/30">
-                          <WorkerDetail worker={worker} zones={zones} shifts={shifts} onEdit={() => { setEditUser(worker); setShowForm(true); }} onResetPin={() => { setResetTarget(worker); setResetPin(''); setShowResetPin(true); }} />
+                          <WorkerDetail worker={worker} zones={zones} shifts={shifts} onEdit={() => { setEditUser(worker); setShowForm(true); }} onResetPin={() => { setResetTarget(worker); setResetPin(''); setShowResetPin(true); }} onToggleStatus={confirmToggleStatus} />
                         </td>
                       </tr>
                     )}
@@ -456,6 +488,19 @@ export default function WorkersPage() {
         />
       </Modal>
 
+      {/* Konfirmasi Nonaktifkan/Aktifkan */}
+      <ConfirmDialog
+        isOpen={!!toggleTarget}
+        onClose={() => setToggleTarget(null)}
+        onConfirm={handleToggleStatus}
+        title={toggleTarget?.status === 'aktif' ? 'Nonaktifkan Pekerja' : 'Aktifkan Pekerja'}
+        message={toggleTarget?.status === 'aktif'
+          ? `Nonaktifkan ${toggleTarget?.nama}? Worker tidak akan bisa login/check-in.`
+          : `Aktifkan kembali ${toggleTarget?.nama}?`}
+        confirmLabel={toggleTarget?.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
+        variant={toggleTarget?.status === 'aktif' ? 'danger' : 'primary'}
+      />
+
       {/* Reset PIN Modal */}
       <Modal isOpen={showResetPin} onClose={() => { setShowResetPin(false); setResetTarget(null); }} title="Reset PIN Pekerja" size="sm">
         <div className="p-5 space-y-4">
@@ -506,7 +551,7 @@ export default function WorkersPage() {
   );
 }
 
-function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin }: { worker: User; zones: Zone[]; shifts: Shift[]; onEdit: () => void; onResetPin: () => void }) {
+function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin, onToggleStatus }: { worker: User; zones: Zone[]; shifts: Shift[]; onEdit: () => void; onResetPin: () => void; onToggleStatus: (w: User) => void }) {
   const zone = zones.find(z => z.id === worker.zona_id);
   const shift = shifts.find(s => s.id === worker.shift_id);
   const bergabung = new Date(worker.bergabung_sejak).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -530,9 +575,10 @@ function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin }: { worker: U
       ))}
       <div className="col-span-2 md:col-span-4 flex gap-2 pt-2 border-t border-gray-100">
         <button onClick={onEdit} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium">Edit Data</button>
-        <button className="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-lg text-xs font-medium">Lihat Kehadiran</button>
         <button className="px-4 py-2 border border-amber-200 hover:bg-amber-50 text-amber-700 rounded-lg text-xs font-medium" onClick={onResetPin}>Reset PIN</button>
-        <button className="px-4 py-2 border border-red-200 hover:bg-red-50 text-red-600 rounded-lg text-xs font-medium">Nonaktifkan</button>
+        <button className="px-4 py-2 border border-red-200 hover:bg-red-50 text-red-600 rounded-lg text-xs font-medium" onClick={() => onToggleStatus(worker)}>
+          {worker.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
+        </button>
       </div>
     </div>
   );

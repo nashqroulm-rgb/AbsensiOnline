@@ -2,9 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Download, FileSpreadsheet } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { getMonthlyReport } from '../../services/reports.service';
-import { getAttendances } from '../../services/attendance.service';
 import { getZones } from '../../services/zones.service';
-import type { MonthlyReport, Attendance, Zone } from '../../types';
+import type { MonthlyReport, Zone } from '../../types';
 import Badge from '../ui/Badge';
 import { downloadCsv } from '../../utils/exportCsv';
 
@@ -13,19 +12,17 @@ export default function ReportsPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [filterZona, setFilterZona] = useState('');
   const [zones, setZones] = useState<Zone[]>([]);
-  const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [monthlyReport, setMonthlyReport] = useState<MonthlyReport[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
-      // FIXPLAN T3: periode + zona benar-benar dikirim ke server
-      const [reportResult, attResult, zoneResult] = await Promise.all([
+      // FIXPLAN T3 + audit: hanya 2 query; chart zona diturunkan dari rekap
+      // yang sudah terfilter periode (sebelumnya pakai full-table → inkonsisten)
+      const [reportResult, zoneResult] = await Promise.all([
         getMonthlyReport(year, month, filterZona || undefined),
-        getAttendances(),
         getZones(),
       ]);
       if (reportResult.success) setMonthlyReport(reportResult.data);
-      if (attResult.success) setAttendances(attResult.data);
       if (zoneResult.success) setZones(zoneResult.data);
     };
     loadData();
@@ -47,18 +44,18 @@ export default function ReportsPage() {
     monthlyReport.map((r, i) => [i + 1, r.nama, r.zona, r.hadir, r.terlambat, r.izin, r.absen, r.libur, r.total_hari_kerja, r.persentase_kehadiran]),
   );
 
+  // FIXPLAN audit: chart zona diturunkan dari monthlyReport (sudah terfilter
+  // periode & zona) — sebelumnya dari full-table attendances → tidak konsisten
   const zoneBarData = (() => {
-    const zoneMap = new Map(zones.map(z => [z.id, z.nama]));
     const zoneStats = new Map<string, { hadir: number; terlambat: number; absen: number; total: number }>();
 
-    for (const att of attendances) {
-      const zonaName = zoneMap.get(att.zona_id) || '—';
-      if (!zoneStats.has(zonaName)) zoneStats.set(zonaName, { hadir: 0, terlambat: 0, absen: 0, total: 0 });
-      const s = zoneStats.get(zonaName)!;
-      s.total++;
-      if (att.status === 'hadir') s.hadir++;
-      else if (att.status === 'terlambat') s.terlambat++;
-      else if (att.status === 'absen') s.absen++;
+    for (const rec of monthlyReport) {
+      if (!zoneStats.has(rec.zona)) zoneStats.set(rec.zona, { hadir: 0, terlambat: 0, absen: 0, total: 0 });
+      const s = zoneStats.get(rec.zona)!;
+      s.hadir += rec.hadir;
+      s.terlambat += rec.terlambat;
+      s.absen += rec.absen;
+      s.total += rec.total_hari_kerja;
     }
 
     return Array.from(zoneStats.entries()).map(([zona, s]) => ({

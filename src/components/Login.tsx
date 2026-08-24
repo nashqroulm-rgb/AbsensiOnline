@@ -73,7 +73,8 @@ export default function Login() {
                   value={pin}
                   onChange={e => setPin(e.target.value)}
                   placeholder="Masukkan PIN"
-                  maxLength={8}
+                  maxLength={6}
+                  inputMode="numeric"
                   className="w-full pl-9 pr-10 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
                 />
                 <button
