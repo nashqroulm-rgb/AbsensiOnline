@@ -3,6 +3,7 @@ import { Plus, Edit2, Trash2 } from 'lucide-react';
 import type { Shift } from '../../types';
 import { getShifts, createShift, updateShift, deleteShift } from '../../services/shifts.service';
 import Badge from '../ui/Badge';
+import { normalizeDayName } from '../../utils/wib';
 import Modal from '../ui/Modal';
 import { useToast } from '../ui/Toast';
 
@@ -24,10 +25,10 @@ function ShiftForm({
     toleransi_menit: initial?.toleransi_menit?.toString() || '15',
     ikon: initial?.ikon || '🌅',
     status: initial?.status || 'aktif',
-    hari_kerja: initial?.hari_kerja || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
+    hari_kerja: initial?.hari_kerja?.map(normalizeDayName) || ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'],
   });
 
-  const hariOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+  const hariOptions = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
   const ikonOptions = ['🌅', '☀️', '🌙', '🏢', '⭐', '🔆'];
 
   const toggleHari = (hari: string) => {
@@ -86,7 +87,7 @@ function ShiftForm({
               <button key={hari} onClick={() => toggleHari(hari)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                   form.hari_kerja.includes(hari) ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}>{hari.slice(0, 3)}</button>
+                }`}>{hari}</button>
             ))}
           </div>
         </div>
@@ -233,9 +234,8 @@ export default function ShiftsPage() {
                   <td className="px-5 py-4 text-sm text-gray-600">{shift.toleransi_menit} menit</td>
                   <td className="px-5 py-4">
                     <div className="flex gap-1 flex-wrap max-w-[200px]">
-                      {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d, i) => {
-                        const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-                        const active = shift.hari_kerja.includes(days[i]);
+                      {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d) => {
+                        const active = shift.hari_kerja.map(normalizeDayName).includes(d);
                         return (
                           <span key={d} className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>{d}</span>
                         );

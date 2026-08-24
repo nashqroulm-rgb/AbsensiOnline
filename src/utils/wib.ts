@@ -24,6 +24,22 @@ export function wibToday(): string {
 
 const DAY_SHORT = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'] as const;
 
+/** ANTI_SPOOF audit-fix: samakan kosakata hari dari sumber mana pun
+ *  (UI lama menulis 'Senin', GPS lib bisa 'Tuesday', dsb) ke kanonik pendek. */
+const DAY_ALIASES: Record<string, string> = {
+  min: 'Min', sen: 'Sen', sel: 'Sel', rab: 'Rab', kam: 'Kam', jum: 'Jum', sab: 'Sab',
+  minggu: 'Min', senin: 'Sen', selasa: 'Sel', rabu: 'Rab', kamis: 'Kam',
+  jumat: 'Jum', sabtu: 'Sab',
+  sun: 'Min', mon: 'Sen', tue: 'Sel', tues: 'Sel', wed: 'Rab', thu: 'Kam',
+  thur: 'Kam', thurs: 'Kam', fri: 'Jum', sat: 'Sab',
+  sunday: 'Min', monday: 'Sen', tuesday: 'Sel', wednesday: 'Rab',
+  thursday: 'Kam', friday: 'Jum', saturday: 'Sab',
+};
+
+export function normalizeDayName(s: string): string {
+  return DAY_ALIASES[s.trim().toLowerCase()] ?? s.trim();
+}
+
 /** Nama hari pendek (Min/Sen/../Sab) menurut WIB — kanonik utk shifts.hari_kerja. */
 export function wibDayName(input: string | Date): string {
   return DAY_SHORT[wibParts(input).dow];

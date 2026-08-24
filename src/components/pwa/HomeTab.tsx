@@ -11,7 +11,7 @@ import { uploadToCloudinary } from '../../utils/cloudinary';
 import { addToQueue, flushQueue, getPendingQueue } from '../../utils/offlineQueue';
 import { getMyFaceProfile, type FaceProfile } from '../../services/face.service';
 import { useAppSettings } from '../../hooks/useAppSettings';
-import { wibDayName } from '../../utils/wib';
+import { normalizeDayName, wibDayName } from '../../utils/wib';
 import type { Attachment, User, Zone, Shift } from '../../types';
 import GeofenceMap from './GeofenceMap';
 import Badge from '../ui/Badge';
@@ -464,8 +464,8 @@ export default function HomeTab() {
     if (worker && worker.absensi_online === false) {
       return 'Absensi online dinonaktifkan oleh admin. Hubungi admin Anda.';
     }
-    if (shift && Array.isArray(shift.hari_kerja) && shift.hari_kerja.length > 0
-      && !shift.hari_kerja.includes(wibDayName(now))) {
+    const allowedDays = (shift?.hari_kerja ?? []).map(normalizeDayName);
+    if (shift && allowedDays.length > 0 && !allowedDays.includes(wibDayName(now))) {
       return `Hari ini (${wibDayName(now)}) bukan hari kerja shift Anda.`;
     }
     return null;
