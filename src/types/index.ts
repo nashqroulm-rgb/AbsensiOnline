@@ -117,23 +117,6 @@ export interface MonthlyReport {
   persentase_kehadiran: number;
 }
 
-export interface PendingSync {
-  id: string;
-  type: 'checkin' | 'checkout';
-  user_id: string;
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  zona_id: string;
-  attendance_id?: string;
-}
-
-export interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-}
-
 /** Standard return type untuk semua service methods. */
 export type ServiceResult<T> =
   | { success: true; data: T }

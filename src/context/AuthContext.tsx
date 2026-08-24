@@ -4,8 +4,6 @@ import type { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
-  /** @deprecated Use `user` — kept for existing components */
-  currentUser: User | null;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -22,7 +20,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        currentUser: user,
         token,
         isAuthenticated,
         loading,

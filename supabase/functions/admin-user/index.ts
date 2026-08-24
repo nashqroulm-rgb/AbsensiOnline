@@ -160,8 +160,35 @@ serve(async (req) => {
       );
     }
 
+    if (type === "sync-metadata") {
+      // FIXPLAN U5: sinkron user_metadata setelah admin mengubah profil.
+      const { userId, metadata } = payload as { userId: string; metadata: Record<string, unknown> };
+
+      if (!userId || !metadata || typeof metadata !== "object") {
+        return new Response(
+          JSON.stringify({ error: "userId and metadata are required" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      const { error: updateError } =
+        await adminClient.auth.admin.updateUserById(userId, { user_metadata: metadata });
+
+      if (updateError) {
+        return new Response(
+          JSON.stringify({ error: updateError.message }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     return new Response(
-      JSON.stringify({ error: "Invalid type. Use 'create', 'delete', or 'reset-pin'." }),
+      JSON.stringify({ error: "Invalid type. Use 'create', 'delete', 'reset-pin', or 'sync-metadata'." }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {

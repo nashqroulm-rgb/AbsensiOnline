@@ -29,20 +29,20 @@ function formatTime(iso: string | null) {
 }
 
 export default function HistoryTab() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [activeFilter, setActiveFilter] = useState<FilterType>('semua');
   const [visibleCount, setVisibleCount] = useState(20);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
 
   useEffect(() => {
-    if (!currentUser?.id) return;
-    const load = () => getHistory(currentUser.id).then(result => {
+    if (!user?.id) return;
+    const load = () => getHistory(user.id).then(result => {
       if (result.success) setHistory(result.data);
     });
     load();
     window.addEventListener('attendance-updated', load);
     return () => window.removeEventListener('attendance-updated', load);
-  }, [currentUser?.id]);
+  }, [user?.id]);
 
   const filtered = useMemo(() =>
     activeFilter === 'semua' ? history : history.filter(h => h.status === activeFilter),

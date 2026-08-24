@@ -12,11 +12,11 @@ export interface CheckInPayload {
   timestamp: string;
 }
 
-export async function getAttendances(): Promise<ServiceResult<Attendance[]>> {
-  const { data, error } = await supabase
-    .from('attendances')
-    .select('*')
-    .order('checkin_at', { ascending: false });
+export async function getAttendances(since?: string): Promise<ServiceResult<Attendance[]>> {
+  // FIXPLAN U7: `since` opsional — dashboard hanya tarik hari-WIB ini
+  let query = supabase.from('attendances').select('*');
+  if (since) query = query.gte('checkin_at', since);
+  const { data, error } = await query.order('checkin_at', { ascending: false });
   if (error) return { success: false, error: error.message, code: error.code };
   return { success: true, data: data as Attendance[] };
 }
@@ -187,14 +187,4 @@ export async function getHistory(userId: string): Promise<ServiceResult<HistoryR
   }));
 
   return { success: true, data: records };
-}
-
-/** @deprecated Use submitCheckIn */
-export const checkIn = submitCheckIn;
-
-/** @deprecated Use submitCheckOut */
-export const checkOut = submitCheckOut;
-
-export async function getStatusLabelAsync(status: AttendanceStatus): Promise<string> {
-  return getStatusLabel(status);
 }

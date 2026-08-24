@@ -12,25 +12,25 @@ import Toggle from '../ui/Toggle';
 import Modal from '../ui/Modal';
 
 export default function ProfileTab() {
-  const { currentUser, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [profile, setProfile] = useState<User | null>(currentUser);
+  const [profile, setProfile] = useState<User | null>(user);
   const [zone, setZone] = useState<Zone | null>(null);
   const [shift, setShift] = useState<Shift | null>(null);
   const [stats, setStats] = useState({ hadir: 0, terlambat: 0, izin: 0 });
 
   useEffect(() => {
-    if (!currentUser?.id) return;
+    if (!user?.id) return;
     const load = async () => {
-      const workerResult = await getWorkerById(currentUser.id);
+      const workerResult = await getWorkerById(user.id);
       if (workerResult.success) {
         setProfile(workerResult.data);
         const [zonesResult, shiftsResult, historyResult] = await Promise.all([
           getZones(),
           getShifts(),
-          getHistory(currentUser.id),
+          getHistory(user.id),
         ]);
         if (zonesResult.success) {
           setZone(zonesResult.data.find(z => z.id === workerResult.data.zona_id) || null);
@@ -53,7 +53,7 @@ export default function ProfileTab() {
       }
     };
     load();
-  }, [currentUser?.id]);
+  }, [user?.id]);
 
   const bergabungDate = profile?.bergabung_sejak
     ? new Date(profile.bergabung_sejak).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -117,7 +117,7 @@ export default function ProfileTab() {
             {[
               { icon: MapPin, label: 'Zona Kerja', value: zone?.nama || '—', color: 'text-green-500' },
               { icon: Clock, label: 'Shift', value: shift ? `${shift.nama} · ${shift.jam_mulai}–${shift.jam_selesai}` : '—', color: 'text-blue-500' },
-              { icon: Briefcase, label: 'Jabatan', value: currentUser?.jabatan || '—', color: 'text-amber-500' },
+              { icon: Briefcase, label: 'Jabatan', value: user?.jabatan || '—', color: 'text-amber-500' },
               { icon: Calendar, label: 'Bergabung Sejak', value: bergabungDate, color: 'text-purple-500' },
             ].map(({ icon: Icon, label, value, color }) => (
               <div key={label} className="flex items-center gap-3 px-4 py-3">
@@ -145,7 +145,7 @@ export default function ProfileTab() {
               </div>
               <div>
                 <p className="text-xs text-gray-400">Nomor HP</p>
-                <p className="text-sm font-medium text-gray-800">{currentUser?.no_hp}</p>
+                <p className="text-sm font-medium text-gray-800">{user?.no_hp}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 px-4 py-3">
@@ -154,7 +154,7 @@ export default function ProfileTab() {
               </div>
               <div>
                 <p className="text-xs text-gray-400">ID Pekerja</p>
-                <p className="text-sm font-medium text-gray-800 uppercase font-mono">{currentUser?.id}</p>
+                <p className="text-sm font-medium text-gray-800 uppercase font-mono">{user?.id}</p>
               </div>
             </div>
             <div className="flex items-center justify-between px-4 py-3">

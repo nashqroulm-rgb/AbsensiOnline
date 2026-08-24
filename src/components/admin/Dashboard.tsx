@@ -8,7 +8,7 @@ import { getShifts } from '../../services/shifts.service';
 import { getZones } from '../../services/zones.service';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
-import { wibToday } from '../../utils/wib';
+import { wibDayRange, wibToday } from '../../utils/wib';
 import type { ActivityFeed, WeeklyData, Attendance, User, Shift, Zone } from '../../types';
 
 function StatCard({ icon: Icon, label, value, sub, color, trend }: {
@@ -37,13 +37,14 @@ function StatCard({ icon: Icon, label, value, sub, color, trend }: {
 }
 
 function ActivityItem({ item }: { item: ActivityFeed }) {
+  // FIXPLAN U8: service hanya memproduksi checkin/terlambat — label lain dihapus
   const eventColors: Record<string, string> = {
-    checkin: '#16A34A', checkout: '#6B7280', upload: '#2563EB', terlambat: '#D97706',
+    checkin: '#16A34A', terlambat: '#D97706',
   };
   const eventLabels: Record<string, string> = {
-    checkin: 'Check-In', checkout: 'Check-Out', upload: 'Upload', terlambat: 'Terlambat',
+    checkin: 'Check-In', terlambat: 'Terlambat',
   };
-  const eventIcons: Record<string, string> = { checkin: '✓', checkout: '✗', upload: '↑', terlambat: '⚠' };
+  const eventIcons: Record<string, string> = { checkin: '✓', terlambat: '⚠' };
 
   const timeAgo = (iso: string) => {
     const diff = (Date.now() - new Date(iso).getTime()) / 60000;
@@ -81,8 +82,10 @@ export default function Dashboard() {
   const [activityFeed, setActivityFeed] = useState<ActivityFeed[]>([]);
 
   const loadAll = async () => {
+    // FIXPLAN U7: dashboard hanya butuh attendance hari-WIB-ini
+    const { start } = wibDayRange(wibToday());
     const [attResult, workerResult, shiftResult, zoneResult] = await Promise.all([
-      getAttendances(),
+      getAttendances(start),
       getWorkers(),
       getShifts(),
       getZones(),

@@ -27,17 +27,17 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
 }
 
 export default function HomeTab() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const { settings } = useAppSettings(); // FIXPLAN T7
-  const [worker, setWorker] = useState<User | null>(currentUser);
+  const [worker, setWorker] = useState<User | null>(user);
   const [zone, setZone] = useState<Zone | null>(null);
   const [shift, setShift] = useState<Shift | null>(null);
 
   useEffect(() => {
-    if (!currentUser?.id) return;
+    if (!user?.id) return;
     const load = async () => {
-      const workerResult = await getWorkerById(currentUser.id);
+      const workerResult = await getWorkerById(user.id);
       if (workerResult.success) {
         setWorker(workerResult.data);
         const [zonesResult, shiftsResult] = await Promise.all([
@@ -53,7 +53,7 @@ export default function HomeTab() {
       }
     };
     load();
-  }, [currentUser?.id]);
+  }, [user?.id]);
 
   const [checkState, setCheckState] = useState<CheckState>('not_checked_in');
   const [activeAttendanceId, setActiveAttendanceId] = useState<string | null>(null);
@@ -95,15 +95,15 @@ export default function HomeTab() {
     if (pending.length === 0) return;
     flushQueue().then(flushed => {
       setQueueCount(getPendingQueue().length);
-      if (flushed > 0 && currentUser?.id) {
-        getTodayAttendance(currentUser.id).then(result => {
+      if (flushed > 0 && user?.id) {
+        getTodayAttendance(user.id).then(result => {
           if (!result.success || !result.data) return;
           setActiveAttendanceId(result.data.id);
           setCheckinTime(new Date(result.data.timestamp));
         });
       }
     });
-  }, [isOnline, currentUser?.id]);
+  }, [isOnline, user?.id]);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30000);
@@ -184,8 +184,8 @@ export default function HomeTab() {
   }, [zone?.id]);
 
   useEffect(() => {
-    if (!currentUser?.id) return;
-    getTodayAttendance(currentUser.id).then((result) => {
+    if (!user?.id) return;
+    getTodayAttendance(user.id).then((result) => {
       if (!result.success || !result.data) return;
       const record = result.data;
       setActiveAttendanceId(record.id);
@@ -205,7 +205,7 @@ export default function HomeTab() {
         });
       }
     });
-  }, [currentUser?.id]);
+  }, [user?.id]);
 
   const formatTime = (d: Date) => d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
@@ -369,7 +369,7 @@ export default function HomeTab() {
       }
     }
 
-    const folder = `${currentUser?.id || 'unknown'}/${activeAttendanceId || 'pending'}`;
+    const folder = `${user?.id || 'unknown'}/${activeAttendanceId || 'pending'}`;
     const result = await uploadToCloudinary(uploadFile, folder, (p) =>
       setUploadProgress(type === 'foto' ? 50 + Math.round(p * 0.5) : p),
     );
@@ -382,7 +382,7 @@ export default function HomeTab() {
     if (activeAttendanceId) {
       const dbResult = await createAttachment({
         attendance_id: activeAttendanceId,
-        user_id: currentUser?.id || '',
+        user_id: user?.id || '',
         tipe: type,
         url: result.data.secure_url,
         nama_file: file.name,
@@ -399,7 +399,7 @@ export default function HomeTab() {
       const att: Attachment = {
         id: `att_${Date.now()}`,
         attendance_id: 'current',
-        user_id: currentUser?.id || '',
+        user_id: user?.id || '',
         tipe: type,
         url: result.data.secure_url,
         nama_file: file.name,
@@ -452,7 +452,7 @@ export default function HomeTab() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-gray-400 text-xs">Selamat datang,</p>
-              <p className="text-white font-semibold text-base leading-tight">{currentUser?.nama}</p>
+              <p className="text-white font-semibold text-base leading-tight">{user?.nama}</p>
               <p className="text-gray-400 text-xs mt-0.5">{dateStr}</p>
             </div>
             <div className="flex items-center gap-2">

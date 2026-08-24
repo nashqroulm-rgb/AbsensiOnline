@@ -384,11 +384,21 @@ Semua perintah CLI (delete ×3, db push 011+012, deploy admin-user & cloudinary-
 - [x] U4 RPC atomic — `increment_lampiran_count(uuid)` SECURITY DEFINER (migrasi 013); wiring service menyusul setelah push
 - [x] U9 validasi waktu (D9 = toleransi pragmatis) — trigger tolak masa depan >5 mnt & masa lalu >25 jam (cukup utk antrean semalam)
 - [x] audit trail override (D10 = kolom minimal) — `overridden_by/overridden_at` + trigger, migrasi 013
-- [ ] U5 sync metadata + profil fresh · [ ] U6 error login (+D8) · [ ] U7 query hemat · [ ] U8 feed jujur
+- [x] U5 sync metadata + profil fresh — edge fn tipe `sync-metadata` (deploy menyusul); `updateWorker` sinkron metadata saat nama/no_hp berubah; `useAuth` satu jalur `hydrate()` + profil segar dari tabel users tanpa re-login
+- [x] U6 error login (+D8 parsial) — status 400 → "PIN salah", lainnya "Gagal menghubungi server"; hardening RPC penuh masih menunggu keputusan D8
+- [x] U7 query hemat — `getAttendances(since?)`; dashboard hanya tarik attendance hari-WIB-ini; AttendancePage tetap full (butuh riwayat)
+- [x] U8 feed jujur — label/ikon event mati (checkout/upload) dihapus dari Dashboard
 
 **Fase F3**
-- [ ] X1 dead code · [ ] X2 leaflet · [ ] X3 docs+graph · [ ] X4 build+bundle · [ ] X5 test (D5) · [ ] X6 CI
+**Fase F3**
+- [x] X1 dead code — useSupabaseQuery.ts, PendingSync/AuthState types, getStatusLabelAsync, alias checkIn/checkOut, key localStorage logout, field deprecated currentUser (35 pemakaian dimigrasi ke `user`)
+- [x] X2 leaflet — `npm rm leaflet @types/leaflet`
+- [x] X3 docs+graph — AGENTS.md ditulis ulang (arahkan status ke FIXPLAN); graphify regenerated
+- [x] X4 build — `npm run build` = `tsc --noEmit && vite build`. *Bundle split (lepas viteSingleFile) belum — butuh pengukuran & keputusan terpisah*
+- [ ] X5 test (D5 vitest menunggu keputusan)
+- [x] X6 CI — .github/workflows/ci.yml (lint + build)
   - progres v1.1: exportPdf.ts sudah dihapus (D4 default CSV); tipe `AppSettings`+`DEFAULT_APP_SETTINGS` ditambahkan ke types (prasyarat T7); temuan tambahan untuk T5: WorkerDetail WorkersPage masih memuat angka palsu "20/22 hari (90.9%)"
+  - progres v1.2: stat palsu WorkerDetail sudah jadi '—'; migrasi **013 TERAPPLY** ke remote (2026-06); verifikasi RPC anon → 404 (tersembunyi = revoke bekerja)
 
 **Verifikasi akhir**
 - [ ] Regression manual: login worker → check-in → upload → checkout → riwayat; login admin → semua halaman admin

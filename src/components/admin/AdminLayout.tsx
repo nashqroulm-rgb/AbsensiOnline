@@ -15,7 +15,7 @@ const navItems: { path: string; label: string; icon: React.ElementType }[] = [
 ];
 
 export default function AdminLayout() {
-  const { currentUser, logout } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -68,11 +68,11 @@ export default function AdminLayout() {
           <div className="p-3 border-t border-gray-100">
             <div className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-gray-50">
               <div className="w-7 h-7 bg-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                {currentUser?.nama?.slice(0, 1)}
+                {user?.nama?.slice(0, 1)}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-gray-900 truncate">{currentUser?.nama}</p>
-                <p className="text-[10px] text-gray-400 capitalize">{currentUser?.role}</p>
+                <p className="text-xs font-medium text-gray-900 truncate">{user?.nama}</p>
+                <p className="text-[10px] text-gray-400 capitalize">{user?.role}</p>
               </div>
               <button onClick={() => { logout(); navigate('/login', { replace: true }); }} title="Logout" className="text-gray-400 hover:text-red-500 transition-colors">
                 <LogOut size={13} />
@@ -120,11 +120,11 @@ export default function AdminLayout() {
             </button>
             <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
               <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {currentUser?.nama?.slice(0, 1)}
+                {user?.nama?.slice(0, 1)}
               </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-medium text-gray-900">{currentUser?.nama}</p>
-                <p className="text-[10px] text-gray-400 capitalize">{currentUser?.role}</p>
+                <p className="text-xs font-medium text-gray-900">{user?.nama}</p>
+                <p className="text-[10px] text-gray-400 capitalize">{user?.role}</p>
               </div>
               <ChevronDown size={14} className="text-gray-400 hidden sm:block" />
             </div>

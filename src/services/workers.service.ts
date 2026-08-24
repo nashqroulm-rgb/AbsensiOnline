@@ -110,6 +110,16 @@ export async function updateWorker(id: string, worker: Partial<User>): Promise<S
 
   const { data, error } = await supabase.from('users').update(worker).eq('id', id).select();
   if (error) return { success: false, error: error.message, code: error.code };
+
+  // FIXPLAN U5: sinkron user_metadata auth agar tampilan & JWT tidak basi
+  const metaSync: Record<string, unknown> = {};
+  if (worker.nama !== undefined) metaSync.nama = worker.nama;
+  if (worker.no_hp !== undefined) metaSync.no_hp = worker.no_hp;
+  if (worker.role !== undefined) metaSync.role = worker.role;
+  if (Object.keys(metaSync).length > 0) {
+    await callAdminUser('sync-metadata', { userId: id, metadata: metaSync });
+  }
+
   return { success: true, data: (data?.[0] as User) || (worker as User) };
 }
 
