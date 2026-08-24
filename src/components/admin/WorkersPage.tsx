@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Download, ChevronLeft, ChevronRight, Edit2, Trash2, Eye, UserX, Key } from 'lucide-react';
 import type { User, Zone, Shift } from '../../types';
 import { getWorkers, createWorker, updateWorker, deleteWorker, resetWorkerPin } from '../../services/workers.service';
-import { getPendingFaceProfiles, setFaceProfileStatus, type FaceProfile } from '../../services/face.service';
+import { getPendingFaceProfiles, setFaceProfileStatus, resetFaceVerification, type FaceProfile } from '../../services/face.service';
 import { downloadCsv } from '../../utils/exportCsv';
 import { getZones } from '../../services/zones.service';
 import { getShifts } from '../../services/shifts.service';
@@ -244,7 +244,17 @@ export default function WorkersPage() {
 
   // FIXPLAN audit: tombol Nonaktifkan/Aktifkan kini berfungsi
   const [toggleTarget, setToggleTarget] = useState<User | null>(null);
+  const [resetFaceTarget, setResetFaceTarget] = useState<User | null>(null);
   const confirmToggleStatus = (worker: User) => setToggleTarget(worker);
+  const confirmResetFace = (worker: User) => setResetFaceTarget(worker);
+  const handleResetFace = async () => {
+    if (!resetFaceTarget) return;
+    const res = await resetFaceVerification(resetFaceTarget.id);
+    if (!res.success) { toast(res.error, 'error'); return; }
+    if (!res.found) { toast(`${resetFaceTarget.nama} belum mendaftarkan wajah.`, 'warning'); }
+    else { toast(`Verifikasi wajah ${resetFaceTarget.nama} direset — worker diminta daftar ulang.`, 'success'); }
+    setResetFaceTarget(null);
+  };
   const handleToggleStatus = async () => {
     if (!toggleTarget) return;
     const newStatus = toggleTarget.status === 'aktif' ? 'nonaktif' : 'aktif';
@@ -456,7 +466,7 @@ export default function WorkersPage() {
                     {isExpanded && (
                       <tr key={`${worker.id}-detail`}>
                         <td colSpan={8} className="px-4 pb-4 pt-2 bg-green-50/30">
-                          <WorkerDetail worker={worker} zones={zones} shifts={shifts} onEdit={() => { setEditUser(worker); setShowForm(true); }} onResetPin={() => { setResetTarget(worker); setResetPin(''); setShowResetPin(true); }} onToggleStatus={confirmToggleStatus} />
+                          <WorkerDetail worker={worker} zones={zones} shifts={shifts} onEdit={() => { setEditUser(worker); setShowForm(true); }} onResetPin={() => { setResetTarget(worker); setResetPin(''); setShowResetPin(true); }} onToggleStatus={confirmToggleStatus} onResetFace={confirmResetFace} />
                         </td>
                       </tr>
                     )}
@@ -510,6 +520,17 @@ export default function WorkersPage() {
           toast={toast}
         />
       </Modal>
+
+      {/* Konfirmasi Reset Verifikasi Wajah */}
+      <ConfirmDialog
+        isOpen={!!resetFaceTarget}
+        onClose={() => setResetFaceTarget(null)}
+        onConfirm={handleResetFace}
+        title="Reset Verifikasi Wajah"
+        message={`Reset verifikasi wajah ${resetFaceTarget?.nama}? Worker akan diminta mendaftar ulang (foto lama tetap tersimpan sebagai arsip).`}
+        confirmLabel="Reset"
+        variant="warning"
+      />
 
       {/* Konfirmasi Nonaktifkan/Aktifkan */}
       <ConfirmDialog
@@ -601,7 +622,7 @@ export default function WorkersPage() {
   );
 }
 
-function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin, onToggleStatus }: { worker: User; zones: Zone[]; shifts: Shift[]; onEdit: () => void; onResetPin: () => void; onToggleStatus: (w: User) => void }) {
+function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin, onToggleStatus, onResetFace }: { worker: User; zones: Zone[]; shifts: Shift[]; onEdit: () => void; onResetPin: () => void; onToggleStatus: (w: User) => void; onResetFace: (w: User) => void }) {
   const zone = zones.find(z => z.id === worker.zona_id);
   const shift = shifts.find(s => s.id === worker.shift_id);
   const bergabung = new Date(worker.bergabung_sejak).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -626,6 +647,7 @@ function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin, onToggleStatu
       <div className="col-span-2 md:col-span-4 flex gap-2 pt-2 border-t border-gray-100">
         <button onClick={onEdit} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium">Edit Data</button>
         <button className="px-4 py-2 border border-amber-200 hover:bg-amber-50 text-amber-700 rounded-lg text-xs font-medium" onClick={onResetPin}>Reset PIN</button>
+        <button className="px-4 py-2 border border-purple-200 hover:bg-purple-50 text-purple-700 rounded-lg text-xs font-medium" onClick={() => onResetFace(worker)}>Reset Wajah</button>
         <button className="px-4 py-2 border border-red-200 hover:bg-red-50 text-red-600 rounded-lg text-xs font-medium" onClick={() => onToggleStatus(worker)}>
           {worker.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
         </button>

@@ -80,3 +80,19 @@ export async function setFaceProfileStatus(
   if (error) return { success: false, error: error.message, code: error.code };
   return { success: true, data: undefined };
 }
+
+/** ANTI_SPOOF B1 — admin reset verifikasi: profil jadi 'ditolak' sehingga
+ *  worker langsung mendapat form daftar ulang. found=false bila tak pernah daftar. */
+export async function resetFaceVerification(
+  userId: string,
+): Promise<ServiceResult<void> & { found: boolean }> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const { data, error } = await supabase
+    .from('face_profiles')
+    .update({ status: 'ditolak', verified_by: session?.user?.id ?? null })
+    .eq('user_id', userId)
+    .select('id')
+    .maybeSingle();
+  if (error) return { success: false, error: error.message, code: error.code, found: false };
+  return { success: true, data: undefined, found: !!data };
+}
