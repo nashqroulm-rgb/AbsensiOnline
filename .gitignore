@@ -16,3 +16,7 @@ graphify-out/run_*.py
 
 # graphify pipeline scripts (not app source; regenerated/moved out of graphify-out)
 .graphify/
+
+# FIXPLAN S6 — data sensitif & sampah
+backups/
+*.sql.gz

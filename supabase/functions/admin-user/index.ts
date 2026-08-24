@@ -70,12 +70,20 @@ serve(async (req) => {
         );
       }
 
+      // FIXPLAN S3: PIN wajib 6 digit — tanpa default '1234'
+      if (!password || !/^\d{6}$/.test(password)) {
+        return new Response(
+          JSON.stringify({ error: "PIN harus tepat 6 digit angka" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
       const email = `${no_hp}@absensi.local`;
 
       const { data: authUser, error: createError } =
         await adminClient.auth.admin.createUser({
           email,
-          password: password || "1234",
+          password,
           email_confirm: true,
           user_metadata: { nama, no_hp, role: role || "worker" },
         });
@@ -119,8 +127,41 @@ serve(async (req) => {
       );
     }
 
+    if (type === "reset-pin") {
+      const { userId, pin } = payload as { userId: string; pin: string };
+
+      if (!userId) {
+        return new Response(
+          JSON.stringify({ error: "userId is required" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      if (!pin || !/^\d{6}$/.test(pin)) {
+        return new Response(
+          JSON.stringify({ error: "PIN harus tepat 6 digit angka" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      const { error: updateError } =
+        await adminClient.auth.admin.updateUserById(userId, { password: pin });
+
+      if (updateError) {
+        return new Response(
+          JSON.stringify({ error: updateError.message }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     return new Response(
-      JSON.stringify({ error: "Invalid type. Use 'create' or 'delete'." }),
+      JSON.stringify({ error: "Invalid type. Use 'create', 'delete', or 'reset-pin'." }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {

@@ -152,3 +152,31 @@ export interface HistoryRecord {
   status: AttendanceStatus;
   lampiran_count: number;
 }
+
+/** FIXPLAN T7 — pengaturan aplikasi (singleton app_settings, migrasi 009). */
+export interface AppSettings {
+  id: number;
+  company_name: string;
+  timezone: string;
+  default_zone_radius_m: number;
+  default_shift_tolerance_min: number;
+  max_file_size_mb: number;
+  max_attachments_per_day: number;
+  max_photos_per_day: number;
+  max_docs_per_day: number;
+  gps_timeout_ms: number;
+  updated_at?: string;
+}
+
+export const DEFAULT_APP_SETTINGS: AppSettings = {
+  id: 1,
+  company_name: 'AbsensiOnline',
+  timezone: 'Asia/Jakarta',
+  default_zone_radius_m: 150,
+  default_shift_tolerance_min: 15,
+  max_file_size_mb: 5,
+  max_attachments_per_day: 10,
+  max_photos_per_day: 5,
+  max_docs_per_day: 5,
+  gps_timeout_ms: 10000,
+};

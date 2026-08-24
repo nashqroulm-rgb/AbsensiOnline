@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Download, ChevronLeft, ChevronRight, Edit2, Trash2, Eye, UserX, Key } from 'lucide-react';
 import type { User, Zone, Shift } from '../../types';
-import { getWorkers, createWorker, updateWorker, deleteWorker } from '../../services/workers.service';
+import { getWorkers, createWorker, updateWorker, deleteWorker, resetWorkerPin } from '../../services/workers.service';
 import { getZones } from '../../services/zones.service';
 import { getShifts } from '../../services/shifts.service';
 import Badge from '../ui/Badge';
@@ -28,6 +28,7 @@ type WorkerFormData = {
   shift_id: string;
   tipe: User['tipe'];
   gender: User['gender'];
+  pin: string;
   absensi_online: boolean;
   status: User['status'];
 };
@@ -114,8 +115,8 @@ function WorkerForm({
         {!initial && (
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">PIN Awal</label>
-            <input value={form.pin} onChange={e => set('pin', e.target.value)} type="password" maxLength={8}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="PIN awal" />
+            <input value={form.pin} onChange={e => set('pin', e.target.value.replace(/\D/g, '').slice(0, 6))} type="password" inputMode="numeric" maxLength={6}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="6 digit angka" />
           </div>
         )}
         <div className="col-span-2 flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -140,6 +141,7 @@ function WorkerForm({
               shift_id: form.shift_id,
               tipe: form.tipe as User['tipe'],
               gender: form.gender as User['gender'],
+              pin: form.pin,
               absensi_online: form.absensi_online,
               status: form.status as User['status'],
             });
@@ -163,6 +165,9 @@ export default function WorkersPage() {
   const [editUser, setEditUser] = useState<User | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [showResetPin, setShowResetPin] = useState(false);
+  const [resetTarget, setResetTarget] = useState<User | null>(null);
+  const [resetPin, setResetPin] = useState('');
   const [workers, setWorkers] = useState<User[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -202,6 +207,11 @@ export default function WorkersPage() {
       });
       if (!res.success) { setError(res.error); return; }
     } else {
+      // FIXPLAN S3: PIN wajib dari form
+      if (!/^\d{6}$/.test(form.pin)) {
+        toast('PIN awal harus tepat 6 digit angka.', 'error');
+        return;
+      }
       const res = await createWorker({
         nama: form.nama,
         no_hp: form.no_hp,
@@ -214,7 +224,7 @@ export default function WorkersPage() {
         gender: form.gender,
         bergabung_sejak: new Date().toISOString().split('T')[0],
         absensi_online: form.absensi_online,
-      });
+      }, form.pin);
       if (!res.success) { setError(res.error); return; }
     }
     setShowForm(false);
@@ -225,6 +235,16 @@ export default function WorkersPage() {
   const confirmDelete = (worker: User) => {
     setDeleteTarget(worker);
     setShowDeleteConfirm(true);
+  };
+
+  const handleResetPin = async () => {
+    if (!resetTarget) return;
+    const res = await resetWorkerPin(resetTarget.id, resetPin);
+    if (!res.success) { toast(res.error, 'error'); return; }
+    toast(`PIN ${resetTarget.nama} berhasil direset.`, 'success');
+    setShowResetPin(false);
+    setResetTarget(null);
+    setResetPin('');
   };
 
   const handleDeleteWorker = async () => {
@@ -369,7 +389,7 @@ export default function WorkersPage() {
                           <button title="Nonaktifkan" className="p-1.5 hover:bg-gray-50 rounded-lg text-gray-400 hover:text-gray-600 transition-colors">
                             <UserX size={14} />
                           </button>
-                          <button title="Reset PIN" className="p-1.5 hover:bg-purple-50 rounded-lg text-gray-400 hover:text-purple-600 transition-colors">
+                          <button onClick={() => { setResetTarget(worker); setResetPin(''); setShowResetPin(true); }} title="Reset PIN" className="p-1.5 hover:bg-purple-50 rounded-lg text-gray-400 hover:text-purple-600 transition-colors">
                             <Key size={14} />
                           </button>
                           <button onClick={() => confirmDelete(worker)} title="Hapus" className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-colors">
@@ -381,7 +401,7 @@ export default function WorkersPage() {
                     {isExpanded && (
                       <tr key={`${worker.id}-detail`}>
                         <td colSpan={8} className="px-4 pb-4 pt-2 bg-green-50/30">
-                          <WorkerDetail worker={worker} zones={zones} shifts={shifts} onEdit={() => { setEditUser(worker); setShowForm(true); }} />
+                          <WorkerDetail worker={worker} zones={zones} shifts={shifts} onEdit={() => { setEditUser(worker); setShowForm(true); }} onResetPin={() => { setResetTarget(worker); setResetPin(''); setShowResetPin(true); }} />
                         </td>
                       </tr>
                     )}
@@ -436,6 +456,34 @@ export default function WorkersPage() {
         />
       </Modal>
 
+      {/* Reset PIN Modal */}
+      <Modal isOpen={showResetPin} onClose={() => { setShowResetPin(false); setResetTarget(null); }} title="Reset PIN Pekerja" size="sm">
+        <div className="p-5 space-y-4">
+          <p className="text-sm text-gray-700">
+            PIN baru untuk <span className="font-semibold">{resetTarget?.nama}</span> ({resetTarget?.no_hp}):
+          </p>
+          <input
+            value={resetPin}
+            onChange={e => setResetPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            type="password"
+            inputMode="numeric"
+            maxLength={6}
+            placeholder="6 digit angka"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          <div className="flex gap-2 pt-2">
+            <button onClick={() => { setShowResetPin(false); setResetTarget(null); }}
+              className="flex-1 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 font-medium">
+              Batal
+            </button>
+            <button onClick={handleResetPin} disabled={!/^\d{6}$/.test(resetPin)}
+              className="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-40 text-white rounded-lg text-sm font-medium">
+              Reset PIN
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Delete Confirmation Modal */}
       <Modal isOpen={showDeleteConfirm} onClose={() => { setShowDeleteConfirm(false); setDeleteTarget(null); }} title="Hapus Pekerja" size="sm">
         <div className="p-5 space-y-4">
@@ -458,7 +506,7 @@ export default function WorkersPage() {
   );
 }
 
-function WorkerDetail({ worker, zones, shifts, onEdit }: { worker: User; zones: Zone[]; shifts: Shift[]; onEdit: () => void }) {
+function WorkerDetail({ worker, zones, shifts, onEdit, onResetPin }: { worker: User; zones: Zone[]; shifts: Shift[]; onEdit: () => void; onResetPin: () => void }) {
   const zone = zones.find(z => z.id === worker.zona_id);
   const shift = shifts.find(s => s.id === worker.shift_id);
   const bergabung = new Date(worker.bergabung_sejak).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -483,7 +531,7 @@ function WorkerDetail({ worker, zones, shifts, onEdit }: { worker: User; zones: 
       <div className="col-span-2 md:col-span-4 flex gap-2 pt-2 border-t border-gray-100">
         <button onClick={onEdit} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium">Edit Data</button>
         <button className="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-lg text-xs font-medium">Lihat Kehadiran</button>
-        <button className="px-4 py-2 border border-amber-200 hover:bg-amber-50 text-amber-700 rounded-lg text-xs font-medium">Reset PIN</button>
+        <button className="px-4 py-2 border border-amber-200 hover:bg-amber-50 text-amber-700 rounded-lg text-xs font-medium" onClick={onResetPin}>Reset PIN</button>
         <button className="px-4 py-2 border border-red-200 hover:bg-red-50 text-red-600 rounded-lg text-xs font-medium">Nonaktifkan</button>
       </div>
     </div>

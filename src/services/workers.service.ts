@@ -45,9 +45,23 @@ function validateWorker(worker: { nama?: string; no_hp?: string }): string | nul
   return null;
 }
 
-export async function createWorker(worker: Omit<User, 'id'>): Promise<ServiceResult<User>> {
+function validatePin(pin: string): string | null {
+  if (!/^\d{6}$/.test(pin)) {
+    return 'PIN harus tepat 6 digit angka.';
+  }
+  return null;
+}
+
+export async function createWorker(
+  worker: Omit<User, 'id'>,
+  pin: string,
+): Promise<ServiceResult<User>> {
   const validationError = validateWorker(worker);
   if (validationError) return { success: false, error: validationError };
+
+  // FIXPLAN S3: PIN wajib dari form admin — tanpa default '1234'
+  const pinError = validatePin(pin);
+  if (pinError) return { success: false, error: pinError };
 
   const { data: existing } = await supabase
     .from('users')
@@ -61,7 +75,7 @@ export async function createWorker(worker: Omit<User, 'id'>): Promise<ServiceRes
   const authResult = await callAdminUser('create', {
     no_hp: worker.no_hp,
     nama: worker.nama,
-    password: '1234',
+    password: pin,
     role: worker.role || 'worker',
   });
   if (authResult.error) {
@@ -107,5 +121,17 @@ export async function deleteWorker(id: string): Promise<ServiceResult<void>> {
 
   const { error } = await supabase.from('users').delete().eq('id', id);
   if (error) return { success: false, error: error.message, code: error.code };
+  return { success: true, data: undefined };
+}
+
+/** FIXPLAN S3: reset PIN pekerja via edge function (admin-only di server). */
+export async function resetWorkerPin(userId: string, pin: string): Promise<ServiceResult<void>> {
+  const pinError = validatePin(pin);
+  if (pinError) return { success: false, error: pinError };
+
+  const authResult = await callAdminUser('reset-pin', { userId, pin });
+  if (authResult.error) {
+    return { success: false, error: authResult.error as string };
+  }
   return { success: true, data: undefined };
 }
