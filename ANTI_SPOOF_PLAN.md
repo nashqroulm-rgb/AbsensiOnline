@@ -228,10 +228,10 @@ Fase C (C1→C4, jalur Android)                       ── 2–3 sesi (butuh d
 - [x] A4 impossible-travel (>150 km/jam → risk tinggi)
 - [x] A5 static-pattern (3 hari titik <2m → risk sedang)
 - [x] A6 UI badge risiko + filter (AttendancePage) + kartu "Risiko Spoofing" (Dashboard)
-  - *Verifikasi runtime menyusul setelah `supabase db push` migrasi 016*
+  - *Migrasi 016 TERAPPLY; verifikasi REST: kolom spoof/accuracy hidup, anon tetap kosong (2026-08)*
 
 **Fase B**
-- [x] B1 enrolment + capture selfie + antrean review admin (migrasi 017; face.service; ProfileTab "Verifikasi Wajah"; HomeTab gerbang selfie saat check-in; WorkersPage modal antrean) — *verifikasi runtime setelah `db push` 017*
+- [x] B1 enrolment + capture selfie + antrean review admin (migrasi 017; face.service; ProfileTab "Verifikasi Wajah"; HomeTab gerbang selfie saat check-in; WorkersPage modal antrean) — *migrasi 017 TERAPPLY; face_profiles terverifikasi via REST (2026-08)*
 - [ ] Spike B2.0 go/no-go (bukti durasi/memori) · [ ] B2 verify-face + threshold terkalibrasi
 - [x] D11=soft-block · D12=latar dihapus · D13=B1 dulu · D14=iOS accepted-risk (disetujui user, sesi ini)
 
