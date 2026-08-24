@@ -71,8 +71,12 @@ export interface Attendance {
   synced_at: string | null;
   latitude_in?: number;
   longitude_in?: number;
+  accuracy_in?: number | null;
   latitude_out?: number;
   longitude_out?: number;
+  accuracy_out?: number | null;
+  spoof_risk?: 'belum_dinilai' | 'rendah' | 'sedang' | 'tinggi';
+  spoof_reasons?: string[] | null;
   lampiran_count: number;
   catatan?: string;
 }

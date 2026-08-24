@@ -10,6 +10,8 @@ export interface CheckInPayload {
   lat: number;
   lng: number;
   timestamp: string;
+  /** ANTI_SPOOF A1: akurasi GPS (meter) dari device */
+  accuracy?: number;
 }
 
 export async function getAttendances(since?: string): Promise<ServiceResult<Attendance[]>> {
@@ -54,6 +56,7 @@ export async function submitCheckIn(
     client_timestamp: payload.timestamp,
     latitude_in: payload.lat,
     longitude_in: payload.lng,
+    accuracy_in: payload.accuracy,
     lampiran_count: 0,
   });
 
@@ -63,7 +66,7 @@ export async function submitCheckIn(
 
 export async function submitCheckOut(
   attendanceId: string,
-  payload: { lat: number; lng: number; timestamp: string },
+  payload: { lat: number; lng: number; timestamp: string; accuracy?: number },
 ): Promise<ServiceResult<void>> {
   const { data: existing, error: fetchError } = await supabase
     .from('attendances')
@@ -86,6 +89,7 @@ export async function submitCheckOut(
       synced_at: payload.timestamp,
       latitude_out: payload.lat,
       longitude_out: payload.lng,
+      accuracy_out: payload.accuracy,
     })
     .eq('id', attendanceId);
 

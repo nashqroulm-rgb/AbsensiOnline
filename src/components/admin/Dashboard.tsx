@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, UserCheck, UserX, AlertCircle, TrendingUp, RefreshCw } from 'lucide-react';
+import { Users, UserCheck, UserX, AlertCircle, TrendingUp, RefreshCw, ShieldAlert } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
 import { getWeeklyData, getActivityFeed } from '../../services/reports.service';
 import { getAttendances } from '../../services/attendance.service';
@@ -156,12 +156,15 @@ export default function Dashboard() {
   return (
     <div className="p-6 space-y-6">
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard icon={Users} label="Total Pekerja" value={totalWorkers} color="#2563EB" sub="Aktif & nonaktif" />
         <StatCard icon={UserCheck} label="Hadir Hari Ini" value={hadir} color="#16A34A"
           sub={`${totalWorkers > 0 ? Math.round((hadir / totalWorkers) * 100) : 0}% dari total`} />
         <StatCard icon={AlertCircle} label="Terlambat" value={terlambat} color="#D97706" sub={`${terlambat} pekerja`} />
         <StatCard icon={UserX} label="Tidak Hadir" value={absen} color="#DC2626" sub={`${absen} pekerja`} />
+        <StatCard icon={ShieldAlert} label="Risiko Spoofing"
+          value={attendances.filter(a => a.spoof_risk === 'tinggi' || a.spoof_risk === 'sedang').length}
+          color="#7C3AED" sub="perlu review admin" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -209,15 +209,15 @@ export default function HomeTab() {
 
   const formatTime = (d: Date) => d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-  const resolvePosition = (): Promise<{ lat: number; lng: number }> => {
-    if (userPos) return Promise.resolve({ lat: userPos.lat, lng: userPos.lng });
+  const resolvePosition = (): Promise<{ lat: number; lng: number; accuracy?: number }> => {
+    if (userPos) return Promise.resolve({ lat: userPos.lat, lng: userPos.lng, accuracy: userPos.accuracy });
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
         reject(new Error('GPS tidak tersedia'));
         return;
       }
       navigator.geolocation.getCurrentPosition(
-        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }),
         reject,
         { enableHighAccuracy: true, timeout: settings.gps_timeout_ms },
       );
@@ -267,6 +267,7 @@ export default function HomeTab() {
         lat: userPos.lat,
         lng: userPos.lng,
         timestamp,
+        accuracy: userPos.accuracy, // ANTI_SPOOF A1
       });
       if (!result.success) {
         // Gagal karena koneksi putus di tengah jalan → masuk antrean
@@ -308,6 +309,7 @@ export default function HomeTab() {
         lat: pos.lat,
         lng: pos.lng,
         timestamp,
+        accuracy: pos.accuracy, // ANTI_SPOOF A1
       });
       if (!result.success) {
         setActionMessage({ type: 'error', text: 'Check-out gagal disimpan. Coba lagi.' });

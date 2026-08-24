@@ -1,7 +1,7 @@
-# Graph Report - C:\Users\K4G3\Documents\Github\AbsensiOnline  (2026-08-24)
+# Graph Report - C:\Users\K4G3\Documents\Github\AbsensiOnline  (2026-08-25)
 
 ## Corpus Check
-- 49 files · ~55,353 words
+- 49 files · ~57,540 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

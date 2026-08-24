@@ -222,7 +222,13 @@ Fase C (C1→C4, jalur Android)                       ── 2–3 sesi (butuh d
 **Checklist**
 
 **Fase A**
-- [ ] A1 kolom accuracy/risk + payload client · [ ] A2 radius server · [ ] A3 plausibility accuracy · [ ] A4 impossible-travel · [ ] A5 static-pattern · [ ] A6 UI badge/filter/dashboard
+- [x] A1 kolom accuracy/risk + payload client (migrasi 016; HomeTab kirim accuracy check-in & checkout)
+- [x] A2 radius server (`is_within_zone` + hook trigger 013)
+- [x] A3 plausibility accuracy (<1 / >500 → tolak)
+- [x] A4 impossible-travel (>150 km/jam → risk tinggi)
+- [x] A5 static-pattern (3 hari titik <2m → risk sedang)
+- [x] A6 UI badge risiko + filter (AttendancePage) + kartu "Risiko Spoofing" (Dashboard)
+  - *Verifikasi runtime menyusul setelah `supabase db push` migrasi 016*
 
 **Fase B**
 - [ ] B1 enrolment + capture selfie + antrean review admin · [ ] Spike B2.0 go/no-go (bukti durasi/memori) · [ ] B2 verify-face + threshold terkalibrasi

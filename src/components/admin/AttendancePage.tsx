@@ -43,6 +43,7 @@ export default function AttendancePage() {
   const [filterZona, setFilterZona] = useState('');
   const [filterShift, setFilterShift] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [filterRisk, setFilterRisk] = useState('');
   const [filterDate, setFilterDate] = useState(wibToday());
   const [page, setPage] = useState(1);
   const [selectedAtt, setSelectedAtt] = useState<Attendance | null>(null);
@@ -113,8 +114,9 @@ export default function AttendancePage() {
     const matchStatus = !filterStatus || a.status === filterStatus;
     // FIXPLAN T2/U1: filter tanggal pakai kalender WIB
     const matchDate = !filterDate || wibDateOf(a.checkin_at || a.client_timestamp || '') === filterDate;
-    return matchSearch && matchZona && matchShift && matchStatus && matchDate;
-  }), [attendances, search, filterDate, filterZona, filterShift, filterStatus]);
+    const matchRisk = !filterRisk || a.spoof_risk === filterRisk;
+    return matchSearch && matchZona && matchShift && matchStatus && matchDate && matchRisk;
+  }), [attendances, search, filterDate, filterZona, filterShift, filterStatus, filterRisk]);
 
   const total = filtered.length;
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -170,6 +172,13 @@ export default function AttendancePage() {
           <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
             {STATUS_OPTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+          <select value={filterRisk} onChange={e => { setFilterRisk(e.target.value); setPage(1); }}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+            <option value="">Semua Risiko</option>
+            <option value="tinggi">⚠ Risiko Tinggi</option>
+            <option value="sedang">Risiko Sedang</option>
+            <option value="rendah">Normal</option>
           </select>
           <button
             onClick={() => downloadCsv(
@@ -236,6 +245,12 @@ export default function AttendancePage() {
                         <Badge variant={getStatusBadgeVariant(att.status)} dot>
                           {getStatusLabel(att.status)}
                         </Badge>
+                        {(att.spoof_risk === 'sedang' || att.spoof_risk === 'tinggi') && (
+                          <span title={(att.spoof_reasons || []).join('; ')}
+                            className={`ml-1 inline-block px-1.5 rounded text-[10px] font-medium align-middle ${att.spoof_risk === 'tinggi' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                            ⚠ {att.spoof_risk}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
                         {att.lampiran_count > 0 ? (
