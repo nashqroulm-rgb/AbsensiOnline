@@ -4,6 +4,7 @@ import { getAttendances, getStatusLabel, updateAttendanceStatus } from '../../se
 import { getShifts } from '../../services/shifts.service';
 import { getZones } from '../../services/zones.service';
 import { getAttachmentsByAttendance, updateAttachmentVerification, rejectAndDeleteAttachment } from '../../services/attachments.service';
+import { getPendingSelfies, setSelfieReview } from '../../services/face.service';
 import type { Attendance, AttendanceStatus, Zone, Shift, Attachment } from '../../types';
 import Badge from '../ui/Badge';
 import { getStatusBadgeVariant } from '../ui/Badge';
@@ -56,6 +57,9 @@ export default function AttendancePage() {
   const [showAttachments, setShowAttachments] = useState(false);
   const [currentAttachments, setCurrentAttachments] = useState<Attachment[]>([]);
   const [attUserNama, setAttUserNama] = useState('');
+  // ANTI_SPOOF B1: antrean review selfie absensi
+  const [showSelfieReview, setShowSelfieReview] = useState(false);
+  const [selfieQueue, setSelfieQueue] = useState<{ id: string; user_nama: string; checkin_at: string | null; selfie_url: string | null }[] | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -103,6 +107,23 @@ export default function AttendancePage() {
     toast('Status kehadiran diperbarui.', 'success');
     setShowOverride(false);
     setOverrideNote('');
+  };
+
+  /** ANTI_SPOOF B1 — keputusan admin atas selfie (soft-block D11). */
+  const openSelfieReview = async () => {
+    setSelfieQueue(null);
+    setShowSelfieReview(true);
+    const res = await getPendingSelfies();
+    if (res.success) setSelfieQueue(res.data);
+    else toast(res.error, 'error');
+  };
+
+  const handleSelfieReview = async (id: string, status: 'cocok' | 'ragu' | 'gagal') => {
+    const res = await setSelfieReview(id, status);
+    if (!res.success) { toast(res.error, 'error'); return; }
+    setAttendances(prev => prev.map(a => a.id === id ? { ...a, selfie_status: status } : a));
+    setSelfieQueue(prev => prev?.filter(s => s.id !== id) ?? prev);
+    toast(`Selfie ditandai ${status}.`, 'success');
   };
 
   const PAGE_SIZE = 10;
@@ -180,6 +201,10 @@ export default function AttendancePage() {
             <option value="sedang">Risiko Sedang</option>
             <option value="rendah">Normal</option>
           </select>
+          <button onClick={openSelfieReview} disabled={selfieQueue !== null && selfieQueue.length === 0}
+            className="flex items-center gap-2 px-3 py-2 border border-purple-200 text-purple-700 hover:bg-purple-50 rounded-lg text-sm font-medium disabled:opacity-40">
+            Selfie Menunggu {selfieQueue?.length ? `(${selfieQueue.length})` : ''}
+          </button>
           <button
             onClick={() => downloadCsv(
               `absensi-${filterDate}.csv`,
@@ -304,6 +329,33 @@ export default function AttendancePage() {
           </div>
         )}
       </div>
+
+      {/* Antrean Review Selfie */}
+      <Modal isOpen={showSelfieReview} onClose={() => setShowSelfieReview(false)} title="Review Selfie Check-In" size="lg">
+        <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+          {selfieQueue === null && <p className="text-sm text-gray-400">Memuat...</p>}
+          {selfieQueue?.length === 0 && <p className="text-sm text-gray-400">Tidak ada selfie menunggu review.</p>}
+          {selfieQueue?.map(s => (
+            <div key={s.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-gray-900">{s.user_nama}</p>
+                <span className="text-xs text-gray-400">{s.checkin_at ? new Date(s.checkin_at).toLocaleString('id-ID') : '—'}</span>
+              </div>
+              {s.selfie_url ? (
+                <img src={s.selfie_url} alt={`selfie-${s.id}`} className="w-40 h-40 object-cover rounded-lg border border-gray-200" />
+              ) : <p className="text-xs text-gray-400">Foto tidak tersedia.</p>}
+              <div className="flex gap-2 pt-1">
+                <button onClick={() => void handleSelfieReview(s.id, 'gagal')}
+                  className="flex-1 py-2 border border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs font-medium">Gagal</button>
+                <button onClick={() => void handleSelfieReview(s.id, 'ragu')}
+                  className="flex-1 py-2 border border-amber-200 text-amber-700 hover:bg-amber-50 rounded-lg text-xs font-medium">Ragu</button>
+                <button onClick={() => void handleSelfieReview(s.id, 'cocok')}
+                  className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium">Cocok</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
 
       {/* Override Modal */}
       <Modal isOpen={showOverride} onClose={() => setShowOverride(false)} title="Override Status Kehadiran" size="sm">

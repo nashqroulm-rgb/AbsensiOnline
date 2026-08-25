@@ -96,3 +96,34 @@ export async function resetFaceVerification(
   if (error) return { success: false, error: error.message, code: error.code, found: false };
   return { success: true, data: undefined, found: !!data };
 }
+
+/** ANTI_SPOOF B1: antrean selfie absensi yang menunggu keputusan admin. */
+export async function getPendingSelfies(): Promise<ServiceResult<{
+  id: string;
+  user_nama: string;
+  checkin_at: string | null;
+  selfie_url: string | null;
+}[]>> {
+  const { data, error } = await supabase
+    .from('attendances')
+    .select('id, user_nama, checkin_at, selfie_url')
+    .eq('selfie_status', 'menunggu')
+    .order('checkin_at', { ascending: false })
+    .limit(50);
+  if (error) return { success: false, error: error.message, code: error.code };
+  const rows = data as { id: string; user_nama: string; checkin_at: string | null; selfie_url: string | null }[];
+  return { success: true, data: rows };
+}
+
+/** Keputusan admin atas selfie absensi (D11: soft-block). */
+export async function setSelfieReview(
+  id: string,
+  status: 'cocok' | 'ragu' | 'gagal',
+): Promise<ServiceResult<void>> {
+  const { error } = await supabase
+    .from('attendances')
+    .update({ selfie_status: status })
+    .eq('id', id);
+  if (error) return { success: false, error: error.message, code: error.code };
+  return { success: true, data: undefined };
+}
