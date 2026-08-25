@@ -34,8 +34,8 @@ export async function submitCheckIn(
   const { data: shift } = await supabase
     .from('shifts')
     .select('jam_mulai, toleransi_menit')
-    .eq('id', payload.shiftId || '')
-    .single();
+    .eq('id', payload.shiftId || '00000000-0000-0000-0000-000000000000')
+    .maybeSingle();
 
   let status: AttendanceStatus = 'hadir';
   if (shift) {
@@ -52,7 +52,7 @@ export async function submitCheckIn(
     id: attendanceId,
     user_id: payload.workerId,
     user_nama: payload.workerName || payload.workerId,
-    shift_id: payload.shiftId || '',
+    shift_id: payload.shiftId || null,
     zona_id: payload.zoneId,
     checkin_at: payload.timestamp,
     status,

@@ -307,9 +307,9 @@ export default function HomeTab() {
         selfie_status: selfieUrl ? 'menunggu' : 'tidak_ada',
       });
       if (!result.success) {
-        // Gagal karena koneksi putus di tengah jalan → masuk antrean
+        // Tampilkan pesan server (pesan guard berbahasa Indonesia & spesifik)
         if (!navigator.onLine) { queueCheckIn(timestamp); return; }
-        setActionMessage({ type: 'error', text: 'Check-in gagal disimpan. Coba lagi.' });
+        setActionMessage({ type: 'error', text: result.error || 'Check-in gagal disimpan. Coba lagi.' });
         return;
       }
       const checkinDate = new Date(timestamp);

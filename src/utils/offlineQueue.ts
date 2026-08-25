@@ -46,6 +46,8 @@ function isPermanentError(errorMsg: string): boolean {
   // selain itu: pesan trigger guard migrasi 013
   return (
     errorMsg.includes('23505') ||
+    errorMsg.includes('duplicate key') ||
+    errorMsg.includes('one_checkin_per_day') ||
     errorMsg.includes('sudah check-in') ||
     errorMsg.includes('masa depan') ||
     errorMsg.includes('terlalu lama') ||
